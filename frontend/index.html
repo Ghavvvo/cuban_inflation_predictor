@@ -37,6 +37,7 @@
     text-shadow: 0 0 8px rgba(0,255,157,0.5);
   }
   .updated { font-size: 0.8rem; color: var(--muted); }
+  .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; }
 
   .hero {
     background: var(--panel); border: 1px solid var(--border);
@@ -92,6 +93,7 @@
   <section class="hero">
     <div class="label">USD/CUP — último observado</div>
     <div class="value mono"><span id="lastValue">—</span> <small>CUP</small></div>
+    <div class="sub mono" id="dataCoverage"></div>
     <div class="hero-grid">
       <div class="stat"><div class="k">Predicción 7 días</div><div class="v mono" id="pred7">—</div></div>
       <div class="stat"><div class="k">Variación 7d</div><div class="v mono" id="delta7">—</div></div>
@@ -142,9 +144,15 @@ async function main() {
     ]);
     document.getElementById("banner").style.display = "none";
 
-    // header
-    document.getElementById("updated").textContent =
-      "actualizado " + new Date(pred.generated_at).toLocaleString("es-CU");
+    // header — cobertura de datos (importante) + generación (secundario)
+    const genStr = new Date(pred.generated_at).toLocaleString("es-CU");
+    document.getElementById("updated").innerHTML =
+      `Datos hasta: <strong>${pred.last_observed.date}</strong>` +
+      `<span style="color:var(--muted);font-size:.7em"> · generado ${genStr}</span>`;
+
+    // hero — subtítulo con fecha del dato consolidado
+    document.getElementById("dataCoverage").textContent =
+      `dato consolidado del ${pred.last_observed.date}`;
 
     // hero
     const last = pred.last_observed.value;
