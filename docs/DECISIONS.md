@@ -3,7 +3,7 @@
 | # | Decisión | Justificación |
 |---|----------|---------------|
 | D1 | Solo USD, multi-moneda listo | `CURRENCIES` en `src/data_loader.py`; añadir `"ECU"` escala sin tocar nada más |
-| D2 | Target `avg` diario, horizonte 7d | Es la variable de referencia del mercado informal; 7d útil y estable para la serie |
+| D2 | Target `median` diario, horizonte 7d | Es el valor que el sitio eltoque.com publica por día; alinear el target con la referencia pública |
 | D3 | Re-exploración manual | El fit completo es caro (CPU); explorar a voluntad evita drift automático no revisado |
 | D4 | Frontend estático | Sin backend: GitHub Pages sirve JSONs, costo cero, auditable |
 | D5 | Modelos commiteados directo | AutoGluon con modelos ligeros (sin Chronos) cabe en git; LFS añade complejidad |

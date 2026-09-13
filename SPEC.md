@@ -20,7 +20,7 @@ Rama de trabajo: `AutoGluon` (ya creada y activa).
 | # | Decisión | Valor |
 |---|----------|-------|
 | D1 | Series | Solo USD. Arquitectura multi-moneda lista: añadir ECU = añadir `"ECU"` a lista `CURRENCIES` en `src/data_loader.py`, sin tocar nada más |
-| D2 | Target | `avg` diario, frecuencia `D`, horizonte de predicción = 7 días |
+| D2 | Target | `median` diario, frecuencia `D`, horizonte de predicción = 7 días (valor que publica el sitio eltoque.com) |
 | D3 | Re-exploración AutoGluon | MANUAL únicamente (flag CLI `--reexplore` + celda final del notebook). NUNCA automática en CI |
 | D4 | Frontend | Sitio estático (GitHub Pages), sin backend, consume `output/predictions.json` + `output/history.jsonl` |
 | D5 | Modelos en git | Commitear `models/predictor/` directo (sin Git LFS). La receta congelada se restringe a modelos ligeros si el artefacto supera 100 MB |
@@ -55,7 +55,8 @@ GET https://api.cubanomic.com/api/v1/x-rates-by-date-range-history?trmi=true&cur
 ```json
 {
   "_id": "2024-09-13",          // fecha, string YYYY-MM-DD (clave primaria)
-  "avg": 320.68,                // TARGET
+  "avg": 320.68,                // promedio del día (no usado como target)
+  "median": 320.0,              // TARGET (valor publicado por el sitio)
   "median": 320.0,
   "min": 310.0,
   "max": 345.0,
@@ -82,7 +83,7 @@ Toda serie en formato LARGO:
 
 - `item_id`: str, código moneda
 - `timestamp`: pd.Timestamp, frecuencia diaria regular (rellenar huecos con `resample('D').ffill()`)
-- `target`: float, columna `avg`
+- `target`: float, columna `median` (D2)
 
 ## 5. Estructura de archivos final
 
@@ -159,7 +160,7 @@ fechas + n registros por item_id.
 Kind: experiment. Crear con helper del skill jupyter-notebook si disponible;
 si no, JSON nbformat 4 estándar. Celdas en este orden exacto:
 
-1. **md — Título + objetivo + criterio de éxito.** Objetivo: predecir avg USD
+1. **md — Título + objetivo + criterio de éxito.** Objetivo: predecir median USD
    7 días. Criterio éxito: ensemble AutoGluon supera baseline naive en MAE y
    MASE sobre últimos 30 días.
 2. **code — Setup.** Imports (pandas, numpy, matplotlib, autogluon.timeseries),

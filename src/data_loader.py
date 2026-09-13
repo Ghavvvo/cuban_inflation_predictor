@@ -61,9 +61,10 @@ def to_long_dataframe(
         df = pd.json_normalize(list(unique.values()))
         df["timestamp"] = pd.to_datetime(df["_id"])
         df = df.set_index("timestamp").sort_index()
-        # asfreq rellena días faltantes; ffill propaga target
+        # asfreq rellena días faltantes; ffill propaga target.
+        # D2: target = median (valor que publica el sitio eltoque.com)
         df = df.asfreq("D").ffill()
-        df = df.rename(columns={"avg": "target"})
+        df = df.rename(columns={"median": "target"})
         df["target"] = df["target"].astype(float)
         df["item_id"] = cur
         frames.append(df.reset_index()[["item_id", "timestamp", "target"]])
