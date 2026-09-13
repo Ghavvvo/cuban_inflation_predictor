@@ -10,6 +10,7 @@ Multi-moneda (D1): añadir código a CURRENCIES. Nada más cambia.
 from __future__ import annotations
 
 import json
+import os
 import warnings
 from pathlib import Path
 
@@ -17,9 +18,19 @@ import pandas as pd
 import requests
 
 API_URL = "https://api.cubanomic.com/api/v1/x-rates-by-date-range-history"
-TOKEN = "CUBANOMIC_TOKEN_REDACTED"
+# TOKEN se lee de env CUBANOMIC_TOKEN (ver fetch_rates). NUNCA hardcodear.
 CURRENCIES = ["USD"]  # D1: añadir "ECU" aquí escala a multi-moneda
 CACHE_PATH = Path("data/tasas_de_cambio.json")
+
+
+def _token() -> str:
+    token = os.environ.get("CUBANOMIC_TOKEN")
+    if not token:
+        raise RuntimeError(
+            "CUBANOMIC_TOKEN no definida. Export en shell (~/.bashrc) o "
+            "secret CUBANOMIC_TOKEN en GitHub Actions."
+        )
+    return token
 
 
 def fetch_rates(
@@ -29,9 +40,10 @@ def fetch_rates(
 
     Lanza excepción si falla requests (no hace fallback aquí).
     """
+    token = _token()
     all_data: list[list[dict]] = []
     for cur in currencies:
-        url = f"{API_URL}?trmi=true&cur={cur}&token={TOKEN}&period={period}"
+        url = f"{API_URL}?trmi=true&cur={cur}&token={token}&period={period}"
         response = requests.get(url, timeout=30)
         response.raise_for_status()
         all_data.append(response.json())

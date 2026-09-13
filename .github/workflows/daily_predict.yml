@@ -22,6 +22,8 @@ jobs:
           pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
       - name: Predict
         run: python -m src.predict
+        env:
+          CUBANOMIC_TOKEN: ${{ secrets.CUBANOMIC_TOKEN }}
       - name: Commit artifacts
         run: |
           git config user.name "github-actions[bot]"

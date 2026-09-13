@@ -45,7 +45,7 @@ pip install autogluon.timeseries --extra-index-url https://download.pytorch.org/
 ### 4.1 API origen
 
 ```
-GET https://api.cubanomic.com/api/v1/x-rates-by-date-range-history?trmi=true&cur={CUR}&token=CUBANOMIC_TOKEN_REDACTED&period=730D
+GET https://api.cubanomic.com/api/v1/x-rates-by-date-range-history?trmi=true&cur={CUR}&token={CUBANOMIC_TOKEN}&period=730D
 ```
 
 `{CUR}` ∈ {`USD`, `ECU`}. Respuesta: lista JSON de registros diarios.
@@ -130,7 +130,7 @@ sort, `resample('D').ffill()`).
 
 ```python
 API_URL = "https://api.cubanomic.com/api/v1/x-rates-by-date-range-history"
-TOKEN = "CUBANOMIC_TOKEN_REDACTED"
+TOKEN = os.environ["CUBANOMIC_TOKEN"]  # env var, NUNCA hardcodear
 CURRENCIES = ["USD"]          # D1: añadir "ECU" aquí escala a multi-moneda
 CACHE_PATH = "data/tasas_de_cambio.json"
 
