@@ -1,0 +1,32 @@
+name: Monthly check
+
+on:
+  schedule:
+    - cron: "0 14 1 * *"   # día 1 del mes, 09:00 Cuba
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+      # Exit 2 = degradación -> job falla -> GitHub notifica al owner (alerta).
+      - name: Monitor degradation
+        run: python -m src.monitor
+      - name: Commit history (actuales actualizados)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/ data/
+          git diff --cached --quiet || git commit -m "chore: monthly monitor $(date -u +%Y-%m-%d)"
+          git push

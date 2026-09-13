@@ -1,0 +1,31 @@
+name: Daily predict
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 07:00 Cuba
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  predict:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+      - name: Predict
+        run: python -m src.predict
+      - name: Commit artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/ data/ models/
+          git diff --cached --quiet || git commit -m "chore: daily prediction $(date -u +%Y-%m-%d)"
+          git push

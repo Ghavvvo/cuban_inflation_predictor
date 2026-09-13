@@ -1,0 +1,88 @@
+{
+  "frozen_at": "2026-09-13T18:29:11.854807+00:00",
+  "eval_metric": "MASE",
+  "prediction_length": 7,
+  "freq": "D",
+  "test_days": 30,
+  "presets": "medium_quality",
+  "excluded_model_types": [
+    "Chronos"
+  ],
+  "best_model": "ETS",
+  "ensemble_weights": {},
+  "leaderboard": [
+    {
+      "index": 0,
+      "model": "ETS",
+      "score_test": -0.15237929127892588,
+      "score_val": -0.3036637857858419,
+      "pred_time_test": 1.9175617694854736,
+      "pred_time_val": 2.101027727127075,
+      "fit_time_marginal": 0.009061336517333984,
+      "fit_order": 4
+    },
+    {
+      "index": 1,
+      "model": "WeightedEnsemble",
+      "score_test": -0.7792656198368191,
+      "score_val": -0.2561081298464444,
+      "pred_time_test": 4.611424207687378,
+      "pred_time_val": 5.545407841114866,
+      "fit_time_marginal": 0.20964819300024828,
+      "fit_order": 6
+    },
+    {
+      "index": 2,
+      "model": "RecursiveTabular",
+      "score_test": -0.8337413617288097,
+      "score_val": -0.5119640913899721,
+      "pred_time_test": 0.5975439548492432,
+      "pred_time_val": 0.0514225959777832,
+      "fit_time_marginal": 0.4724709987640381,
+      "fit_order": 2
+    },
+    {
+      "index": 3,
+      "model": "Theta",
+      "score_test": -0.9881384341669248,
+      "score_val": -0.2713400271783504,
+      "pred_time_test": 1.5979106426239014,
+      "pred_time_val": 2.000988483428955,
+      "fit_time_marginal": 0.010244369506835938,
+      "fit_order": 5
+    },
+    {
+      "index": 4,
+      "model": "SeasonalNaive",
+      "score_test": -1.8076526085145674,
+      "score_val": -0.2897733781148738,
+      "pred_time_test": 1.0946297645568848,
+      "pred_time_val": 1.4416213035583496,
+      "fit_time_marginal": 0.016935348510742188,
+      "fit_order": 1
+    },
+    {
+      "index": 5,
+      "model": "DirectTabular",
+      "score_test": -9.78842495710575,
+      "score_val": -3.8984960278389167,
+      "pred_time_test": 0.06549406051635742,
+      "pred_time_val": 0.07432770729064941,
+      "fit_time_marginal": 0.42889976501464844,
+      "fit_order": 3
+    }
+  ],
+  "baselines": {
+    "naive": {
+      "MAE": 6.721999999999988,
+      "RMSE": 8.765323344482686,
+      "MASE": 1.0062372137118911
+    },
+    "moving_avg_7": {
+      "MAE": 6.772857142857121,
+      "RMSE": 7.7200412832423195,
+      "MASE": 1.0138501785625174
+    }
+  },
+  "data_last_date": "2026-09-11"
+}

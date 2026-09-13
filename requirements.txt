@@ -1,0 +1,6 @@
+autogluon.timeseries
+pandas
+numpy
+requests
+matplotlib
+jupyter

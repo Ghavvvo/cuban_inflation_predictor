@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CubaRate — Predicción USD/CUP</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --panel: #0d1220;
+    --border: #1b2337;
+    --cyan: #00e5ff;
+    --green: #00ff9d;
+    --red: #ff4d6d;
+    --text: #e6f1ff;
+    --muted: #6b7a99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: radial-gradient(ellipse at 50% -10%, #10243e 0%, var(--bg) 55%);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+
+  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem; }
+  .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; }
+  .logo span { color: var(--cyan); }
+  .badge {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
+    border: 1px solid var(--green); color: var(--green);
+    padding: 0.25rem 0.6rem; border-radius: 999px;
+    text-shadow: 0 0 8px rgba(0,255,157,0.5);
+  }
+  .updated { font-size: 0.8rem; color: var(--muted); }
+
+  .hero {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem;
+    box-shadow: 0 0 40px rgba(0,229,255,0.07);
+  }
+  .hero .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); }
+  .hero .value {
+    font-size: 3.2rem; font-weight: 800; letter-spacing: -1px;
+    text-shadow: 0 0 24px rgba(0,229,255,0.35);
+  }
+  .hero .value small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
+  .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+  .stat { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+  .stat .k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+  .stat .v { font-size: 1.5rem; font-weight: 700; }
+  .up { color: var(--green); } .down { color: var(--red); }
+
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
+  }
+  .card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: 0.5px; }
+  .card h2::before { content: "▸ "; color: var(--cyan); }
+
+  .chart-box { position: relative; height: 380px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { padding: 0.55rem 0.6rem; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+  td.err { color: var(--red); }
+
+  .metrics { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .metric { font-size: 0.85rem; }
+  .metric .k { color: var(--muted); }
+  .metric .v { font-size: 1.2rem; font-weight: 700; }
+
+  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
+  footer a { color: var(--cyan); text-decoration: none; }
+  .banner { background: rgba(255,77,109,0.1); border: 1px solid var(--red); color: var(--red); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">Cuba<span>Rate</span></div>
+    <div class="badge">EXPERIMENTAL</div>
+    <div class="updated mono" id="updated">cargando…</div>
+  </header>
+
+  <div class="banner" id="banner">Datos no disponibles. Reintentar más tarde.</div>
+
+  <section class="hero">
+    <div class="label">USD/CUP — último observado</div>
+    <div class="value mono"><span id="lastValue">—</span> <small>CUP</small></div>
+    <div class="hero-grid">
+      <div class="stat"><div class="k">Predicción 7 días</div><div class="v mono" id="pred7">—</div></div>
+      <div class="stat"><div class="k">Variación 7d</div><div class="v mono" id="delta7">—</div></div>
+      <div class="stat"><div class="k">MASE test</div><div class="v mono" id="mase">—</div></div>
+      <div class="stat"><div class="k">Receta congelada</div><div class="v mono" id="frozen" style="font-size:1rem">—</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Serie y predicción</h2>
+    <div class="chart-box"><canvas id="chart"></canvas></div>
+  </section>
+
+  <section class="card">
+    <h2>Auditoría pública</h2>
+    <div class="metrics" id="metrics"></div>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Fecha</th><th>Predicción</th><th>Real</th><th>Error</th></tr></thead>
+        <tbody id="auditBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <strong>No es consejo financiero.</strong> Modelo experimental con fines
+    educativos. Datos: eltoque.com vía API cubanomic. Ver
+    <a href="https://github.com" id="repoLink" target="_blank">repositorio</a>.
+  </footer>
+</div>
+
+<script>
+const BASE = "../output/";
+
+async function loadJSON(path) {
+  const r = await fetch(path);
+  if (!r.ok) throw new Error(path + " -> " + r.status);
+  return r.json();
+}
+
+function fmt(n) { return n == null ? "—" : Number(n).toLocaleString("es-CU", {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+
+async function main() {
+  try {
+    const [pred, lines] = await Promise.all([
+      loadJSON(BASE + "predictions.json"),
+      (await fetch(BASE + "history.jsonl")).text()
+    ]);
+    document.getElementById("banner").style.display = "none";
+
+    // header
+    document.getElementById("updated").textContent =
+      "actualizado " + new Date(pred.generated_at).toLocaleString("es-CU");
+
+    // hero
+    const last = pred.last_observed.value;
+    const p7 = pred.forecast[pred.forecast.length - 1];
+    document.getElementById("lastValue").textContent = fmt(last);
+    document.getElementById("pred7").textContent = fmt(p7.mean);
+    const d = p7.mean - last;
+    const dpct = (d / last) * 100;
+    const dEl = document.getElementById("delta7");
+    dEl.textContent = (d >= 0 ? "+" : "") + dpct.toFixed(2) + "%";
+    dEl.className = "mono " + (d >= 0 ? "up" : "down");
+    document.getElementById("mase").textContent = pred.model.test_mase != null ? pred.model.test_mase.toFixed(3) : "—";
+    document.getElementById("frozen").textContent = pred.model.recipe_frozen_at ? pred.model.recipe_frozen_at.slice(0, 10) : "—";
+
+    // history events
+    const events = lines.split("\n").filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+    const preds = events.filter(e => e.type === "prediction" && e.actual != null);
+
+    // chart data
+    const histDates = preds.map(e => e.date);
+    const histActual = preds.map(e => e.actual);
+    const histPred = preds.map(e => e.predicted);
+    const fcDates = pred.forecast.map(f => f.date);
+    const fcMean = pred.forecast.map(f => f.mean);
+    const fcP10 = pred.forecast.map(f => f.p10);
+    const fcP90 = pred.forecast.map(f => f.p90);
+
+    const ctx = document.getElementById("chart");
+    new Chart(ctx, {
+      data: {
+        labels: [...histDates, ...fcDates],
+        datasets: [
+          { label: "Real", data: [...histActual, ...Array(fcDates.length).fill(null)],
+            borderColor: "#e6f1ff", backgroundColor: "rgba(230,241,255,0.1)",
+            pointRadius: 0, borderWidth: 1.5, tension: 0.3 },
+          { label: "Predicción (media)", data: [...histPred, ...fcMean],
+            borderColor: "#00e5ff", borderDash: [6, 4],
+            pointRadius: 0, borderWidth: 1.5, tension: 0.3 },
+          { label: "p10-p90", data: [...Array(histDates.length).fill(null), ...fcP90],
+            borderColor: "rgba(0,229,255,0)", backgroundColor: "rgba(0,229,255,0.12)",
+            fill: "+1", pointRadius: 0 },
+          { label: "p10", data: [...Array(histDates.length).fill(null), ...fcP10],
+            borderColor: "rgba(0,229,255,0)", pointRadius: 0 },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { labels: { color: "#6b7a99", boxWidth: 12 } },
+          tooltip: { mode: "index", intersect: false }
+        },
+        scales: {
+          x: { ticks: { color: "#6b7a99", maxTicksLimit: 10 }, grid: { color: "rgba(27,35,55,0.5)" } },
+          y: { ticks: { color: "#6b7a99" }, grid: { color: "rgba(27,35,55,0.5)" } }
+        }
+      }
+    });
+
+    // audit table
+    const rows = preds.slice().reverse().slice(0, 30);
+    document.getElementById("auditBody").innerHTML = rows.map(e => {
+      const err = (e.actual - e.predicted).toFixed(2);
+      const errAbs = Math.abs(e.actual - e.predicted);
+      return `<tr><td class="mono">${e.date}</td><td class="mono">${fmt(e.predicted)}</td><td class="mono">${fmt(e.actual)}</td><td class="mono err">${errAbs.toFixed(2)}</td>`;
+    }).join("");
+
+    // metrics
+    if (preds.length) {
+      const errs = preds.map(e => Math.abs(e.actual - e.predicted));
+      const mae7 = errs.slice(-7).reduce((a,b)=>a+b,0) / Math.min(7, errs.length);
+      const mae30 = errs.slice(-30).reduce((a,b)=>a+b,0) / Math.min(30, errs.length);
+      document.getElementById("metrics").innerHTML =
+        `<div class="metric"><span class="k">MAE 7d</span> <span class="v mono">${mae7.toFixed(2)}</span></div>` +
+        `<div class="metric"><span class="k">MAE 30d</span> <span class="v mono">${mae30.toFixed(2)}</span></div>` +
+        `<div class="metric"><span class="k">Predicciones auditables</span> <span class="v mono">${preds.length}</span></div>`;
+    }
+  } catch (err) {
+    document.getElementById("banner").style.display = "block";
+    console.error(err);
+  }
+}
+
+main();
+</script>
+</body>
+</html>
