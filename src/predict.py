@@ -27,6 +27,29 @@ def log_error(source: str, msg: str) -> None:
         }) + "\n")
 
 
+def upsert_predictions(path: Path, forecast: list[dict], generated_at: str) -> list[dict]:
+    """Histórico con las fechas del forecast reemplazadas (sin duplicados)."""
+    dates = {p["date"] for p in forecast}
+    lines = path.read_text().splitlines() if path.exists() else []
+    events = []
+    for line in lines:
+        if not line:
+            continue
+        event = json.loads(line)
+        is_stale = event["type"] == "prediction" and event["date"] in dates
+        if not is_stale:
+            events.append(event)
+    for p in forecast:
+        events.append({
+            "type": "prediction",
+            "generated_at": generated_at,
+            "date": p["date"],
+            "predicted": p["mean"],
+            "actual": None,
+        })
+    return events
+
+
 def main(out: str = OUTPUT_PATH) -> int:
     df_long = load_series(refresh=True)
     tsdf = TimeSeriesDataFrame.from_data_frame(
@@ -71,16 +94,13 @@ def main(out: str = OUTPUT_PATH) -> int:
     with open(out, "w") as fh:
         json.dump(pred, fh, indent=2, ensure_ascii=False)
 
+    events = upsert_predictions(
+        Path(HISTORY_PATH), pred["forecast"], pred["generated_at"]
+    )
     Path(HISTORY_PATH).parent.mkdir(parents=True, exist_ok=True)
-    with open(HISTORY_PATH, "a") as fh:
-        for p in pred["forecast"]:
-            fh.write(json.dumps({
-                "type": "prediction",
-                "generated_at": pred["generated_at"],
-                "date": p["date"],
-                "predicted": p["mean"],
-                "actual": None,
-            }) + "\n")
+    Path(HISTORY_PATH).write_text(
+        "\n".join(json.dumps(e) for e in events) + "\n"
+    )
 
     print(f"predictions escritas en {out} ({len(pred['forecast'])} días)")
     return 0

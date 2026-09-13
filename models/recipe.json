@@ -1,5 +1,5 @@
 {
-  "frozen_at": "2026-09-13T20:28:13.287153+00:00",
+  "frozen_at": "2026-09-13T21:34:52.735514+00:00",
   "eval_metric": "MASE",
   "prediction_length": 7,
   "freq": "D",
@@ -16,9 +16,9 @@
       "model": "Theta",
       "score_test": -0.7689127604166667,
       "score_val": -0.2507977125162422,
-      "pred_time_test": 2.1499035358428955,
-      "pred_time_val": 1.830216407775879,
-      "fit_time_marginal": 0.009329795837402344,
+      "pred_time_test": 1.6399574279785156,
+      "pred_time_val": 1.6592755317687988,
+      "fit_time_marginal": 0.011440515518188477,
       "fit_order": 5
     },
     {
@@ -26,9 +26,9 @@
       "model": "RecursiveTabular",
       "score_test": -0.8410264756944444,
       "score_val": -0.6389155022697477,
-      "pred_time_test": 0.6717171669006348,
-      "pred_time_val": 0.042998313903808594,
-      "fit_time_marginal": 0.34497690200805664,
+      "pred_time_test": 0.05044436454772949,
+      "pred_time_val": 0.043315887451171875,
+      "fit_time_marginal": 0.3381812572479248,
       "fit_order": 2
     },
     {
@@ -36,39 +36,39 @@
       "model": "Toto2",
       "score_test": -0.9577675471230159,
       "score_val": -0.262312646361912,
-      "pred_time_test": 8.11137056350708,
-      "pred_time_val": 0.02177739143371582,
-      "fit_time_marginal": 0.698523998260498,
+      "pred_time_test": 0.616506814956665,
+      "pred_time_val": 0.020859479904174805,
+      "fit_time_marginal": 0.8550441265106201,
       "fit_order": 7
     },
     {
       "index": 3,
-      "model": "ETS",
+      "model": "WeightedEnsemble",
       "score_test": -0.9650793650802543,
       "score_val": -0.17328300357206192,
-      "pred_time_test": 1.9238171577453613,
-      "pred_time_val": 2.0441956520080566,
-      "fit_time_marginal": 0.010269403457641602,
-      "fit_order": 4
+      "pred_time_test": 1.689979076385498,
+      "pred_time_val": 1.961837559221749,
+      "fit_time_marginal": 0.2617543630003638,
+      "fit_order": 8
     },
     {
       "index": 4,
-      "model": "WeightedEnsemble",
-      "score_test": -1.473015873015873,
+      "model": "ETS",
+      "score_test": -0.9650793650802543,
       "score_val": -0.17328300357206192,
-      "pred_time_test": 1.2970607280731201,
-      "pred_time_val": 1.414035511737893,
-      "fit_time_marginal": 0.2978325960029906,
-      "fit_order": 8
+      "pred_time_test": 1.6895382404327393,
+      "pred_time_val": 1.9614434242248535,
+      "fit_time_marginal": 0.008301496505737305,
+      "fit_order": 4
     },
     {
       "index": 5,
       "model": "SeasonalNaive",
       "score_test": -1.473015873015873,
       "score_val": -0.17328300357206192,
-      "pred_time_test": 1.296661376953125,
-      "pred_time_val": 1.4137074947357178,
-      "fit_time_marginal": 0.010820865631103516,
+      "pred_time_test": 1.1841423511505127,
+      "pred_time_val": 1.3380398750305176,
+      "fit_time_marginal": 0.010730266571044922,
       "fit_order": 1
     },
     {
@@ -76,9 +76,9 @@
       "model": "Chronos2",
       "score_test": -1.752644469246032,
       "score_val": -0.22179886013857572,
-      "pred_time_test": 7.328185558319092,
-      "pred_time_val": 0.51615309715271,
-      "fit_time_marginal": 7.411472797393799,
+      "pred_time_test": 2.386594772338867,
+      "pred_time_val": 0.22091126441955566,
+      "fit_time_marginal": 6.159571886062622,
       "fit_order": 6
     },
     {
@@ -86,9 +86,9 @@
       "model": "DirectTabular",
       "score_test": -4.168450830853175,
       "score_val": -2.7364055736080672,
-      "pred_time_test": 0.0613706111907959,
-      "pred_time_val": 0.051728248596191406,
-      "fit_time_marginal": 0.35144734382629395,
+      "pred_time_test": 0.05570626258850098,
+      "pred_time_val": 0.045374393463134766,
+      "fit_time_marginal": 0.33983635902404785,
       "fit_order": 3
     }
   ],

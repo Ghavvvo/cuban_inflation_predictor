@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-13T20:28:20.457804+00:00",
+  "generated_at": "2026-09-13T21:40:15.092999+00:00",
   "item_id": "USD",
   "horizon_days": 7,
   "last_observed": {
@@ -51,7 +51,7 @@
     }
   ],
   "model": {
-    "recipe_frozen_at": "2026-09-13T20:28:13.287153+00:00",
+    "recipe_frozen_at": "2026-09-13T21:34:52.735514+00:00",
     "eval_metric": "MASE",
     "test_mase": -0.7689127604166667
   },
