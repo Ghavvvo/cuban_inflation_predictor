@@ -36,7 +36,11 @@
     padding: 0.25rem 0.6rem; border-radius: 999px;
     text-shadow: 0 0 8px rgba(0,255,157,0.5);
   }
-  .updated { font-size: 0.8rem; color: var(--muted); }
+  .updated {
+    display: flex; flex-wrap: wrap; justify-content: flex-end;
+    gap: 0.4rem 0.9rem; font-size: 0.8rem; color: var(--text);
+  }
+  .updated strong { color: var(--muted); font-weight: 600; }
   .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; }
 
   .hero {
@@ -147,8 +151,8 @@ async function main() {
     // header — cobertura de datos (importante) + generación (secundario)
     const genStr = new Date(pred.generated_at).toLocaleString("es-CU");
     document.getElementById("updated").innerHTML =
-      `Datos hasta: <strong>${pred.last_observed.date}</strong>` +
-      `<span style="color:var(--muted);font-size:.7em"> · generado ${genStr}</span>`;
+      `<span><strong>Datos hasta:</strong> ${pred.last_observed.date}</span>` +
+      `<span><strong>Predicción actualizada:</strong> ${genStr}</span>`;
 
     // hero — subtítulo con fecha del dato consolidado
     document.getElementById("dataCoverage").textContent =
