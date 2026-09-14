@@ -8,3 +8,4 @@
 {"type": "prediction", "generated_at": "2026-09-14T15:37:13.170050+00:00", "date": "2026-09-19", "predicted": 690.0, "actual": null}
 {"type": "prediction", "generated_at": "2026-09-14T15:37:13.170050+00:00", "date": "2026-09-20", "predicted": 690.0, "actual": null}
 {"type": "prediction", "generated_at": "2026-09-14T15:37:13.170050+00:00", "date": "2026-09-21", "predicted": 690.0, "actual": null}
+{"type": "retrain", "at": "2026-09-14T15:59:11.672307+00:00", "best_model": "RecursiveTabular", "score_test": -0.5248630751656987}

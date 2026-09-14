@@ -13,82 +13,82 @@
   "leaderboard": [
     {
       "index": 0,
-      "model": "Theta",
-      "score_test": -0.7689127604166667,
-      "score_val": -0.2507977125162422,
-      "pred_time_test": 1.6399574279785156,
-      "pred_time_val": 1.6592755317687988,
-      "fit_time_marginal": 0.011440515518188477,
-      "fit_order": 5
-    },
-    {
-      "index": 1,
       "model": "RecursiveTabular",
-      "score_test": -0.8410264756944444,
-      "score_val": -0.6389155022697477,
-      "pred_time_test": 0.05044436454772949,
-      "pred_time_val": 0.043315887451171875,
-      "fit_time_marginal": 0.3381812572479248,
+      "score_test": -0.5248630751656987,
+      "score_val": -0.3649589113959351,
+      "pred_time_test": 0.049337148666381836,
+      "pred_time_val": 0.04493856430053711,
+      "fit_time_marginal": 0.40117907524108887,
       "fit_order": 2
     },
     {
+      "index": 1,
+      "model": "Chronos2",
+      "score_test": -0.533811376753968,
+      "score_val": -0.4881392896557305,
+      "pred_time_test": 0.4173145294189453,
+      "pred_time_val": 0.2296006679534912,
+      "fit_time_marginal": 6.644845962524414,
+      "fit_order": 6
+    },
+    {
       "index": 2,
-      "model": "Toto2",
-      "score_test": -0.9577675471230159,
-      "score_val": -0.262312646361912,
-      "pred_time_test": 0.616506814956665,
-      "pred_time_val": 0.020859479904174805,
-      "fit_time_marginal": 0.8550441265106201,
-      "fit_order": 7
-    },
-    {
-      "index": 3,
-      "model": "WeightedEnsemble",
-      "score_test": -0.9650793650802543,
-      "score_val": -0.17328300357206192,
-      "pred_time_test": 1.689979076385498,
-      "pred_time_val": 1.961837559221749,
-      "fit_time_marginal": 0.2617543630003638,
-      "fit_order": 8
-    },
-    {
-      "index": 4,
-      "model": "ETS",
-      "score_test": -0.9650793650802543,
-      "score_val": -0.17328300357206192,
-      "pred_time_test": 1.6895382404327393,
-      "pred_time_val": 1.9614434242248535,
-      "fit_time_marginal": 0.008301496505737305,
-      "fit_order": 4
-    },
-    {
-      "index": 5,
       "model": "SeasonalNaive",
-      "score_test": -1.473015873015873,
-      "score_val": -0.17328300357206192,
-      "pred_time_test": 1.1841423511505127,
-      "pred_time_val": 1.3380398750305176,
-      "fit_time_marginal": 0.010730266571044922,
+      "score_test": -0.6082638765738606,
+      "score_val": -0.931627918395404,
+      "pred_time_test": 0.01515817642211914,
+      "pred_time_val": 1.5149805545806885,
+      "fit_time_marginal": 0.011175394058227539,
       "fit_order": 1
     },
     {
+      "index": 3,
+      "model": "Theta",
+      "score_test": -0.6361072036379259,
+      "score_val": -0.34280680003026687,
+      "pred_time_test": 0.02688908576965332,
+      "pred_time_val": 0.622011661529541,
+      "fit_time_marginal": 0.009416818618774414,
+      "fit_order": 5
+    },
+    {
+      "index": 4,
+      "model": "Toto2",
+      "score_test": -0.8233986124118859,
+      "score_val": -0.24080973245356957,
+      "pred_time_test": 0.17498254776000977,
+      "pred_time_val": 0.023128747940063477,
+      "fit_time_marginal": 1.0889649391174316,
+      "fit_order": 7
+    },
+    {
+      "index": 5,
+      "model": "WeightedEnsemble",
+      "score_test": -1.0163910110049075,
+      "score_val": -0.1101404237690334,
+      "pred_time_test": 0.8215644359588623,
+      "pred_time_val": 2.3515180132337434,
+      "fit_time_marginal": 0.2561153519999948,
+      "fit_order": 8
+    },
+    {
       "index": 6,
-      "model": "Chronos2",
-      "score_test": -1.752644469246032,
-      "score_val": -0.22179886013857572,
-      "pred_time_test": 2.386594772338867,
-      "pred_time_val": 0.22091126441955566,
-      "fit_time_marginal": 6.159571886062622,
-      "fit_order": 6
+      "model": "ETS",
+      "score_test": -1.0570442225249574,
+      "score_val": -0.1124629227900341,
+      "pred_time_test": 0.22772836685180664,
+      "pred_time_val": 2.09708571434021,
+      "fit_time_marginal": 0.009908914566040039,
+      "fit_order": 4
     },
     {
       "index": 7,
       "model": "DirectTabular",
-      "score_test": -4.168450830853175,
-      "score_val": -2.7364055736080672,
-      "pred_time_test": 0.05570626258850098,
-      "pred_time_val": 0.045374393463134766,
-      "fit_time_marginal": 0.33983635902404785,
+      "score_test": -2.1124833444053137,
+      "score_val": -2.4480456007433316,
+      "pred_time_test": 0.061080217361450195,
+      "pred_time_val": 0.0527949333190918,
+      "fit_time_marginal": 0.7117869853973389,
       "fit_order": 3
     }
   ],
@@ -104,5 +104,6 @@
       "MASE": 1.104152005629838
     }
   },
-  "data_last_date": "2026-09-11"
+  "data_last_date": "2026-09-14",
+  "last_retrain": "2026-09-14T15:59:11.672307+00:00"
 }
