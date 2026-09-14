@@ -270,6 +270,9 @@ python -m src.monitor
   "item_id": "USD",
   "horizon_days": 7,
   "last_observed": {"date": "YYYY-MM-DD", "value": 320.68},
+  "history_series": [
+    {"date": "YYYY-MM-DD", "value": 320.68}
+  ],
   "forecast": [
     {"date": "YYYY-MM-DD", "mean": 321.0, "p10": 315.0, "p90": 327.0}
   ],

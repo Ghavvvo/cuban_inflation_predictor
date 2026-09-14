@@ -175,10 +175,10 @@ async function main() {
     const events = lines.split("\n").filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
     const preds = events.filter(e => e.type === "prediction" && e.actual != null);
 
-    // chart data
-    const histDates = preds.map(e => e.date);
-    const histActual = preds.map(e => e.actual);
-    const histPred = preds.map(e => e.predicted);
+    // chart data — serie real desde predictions.json + forecast actual
+    const hist = pred.history_series || [];
+    const histDates = hist.map(h => h.date);
+    const histValues = hist.map(h => h.value);
     const fcDates = pred.forecast.map(f => f.date);
     const fcMean = pred.forecast.map(f => f.mean);
     const fcP10 = pred.forecast.map(f => f.p10);
@@ -190,12 +190,12 @@ async function main() {
       data: {
         labels: [...histDates, ...fcDates],
         datasets: [
-          { label: "Real", data: [...histActual, ...Array(fcDates.length).fill(null)],
-            borderColor: "#e6f1ff", backgroundColor: "rgba(230,241,255,0.1)",
-            pointRadius: 0, borderWidth: 1.5, tension: 0.3 },
-          { label: "Predicción (media)", data: [...histPred, ...fcMean],
+          { label: "Histórico (real)", data: [...histValues, ...Array(fcDates.length).fill(null)],
+            borderColor: "#e6f1ff", backgroundColor: "rgba(230,241,255,0.08)",
+            pointRadius: 0, borderWidth: 1.5, tension: 0.3, fill: false },
+          { label: "Predicción (media)", data: [...Array(histDates.length).fill(null), ...fcMean],
             borderColor: "#00e5ff", borderDash: [6, 4],
-            pointRadius: 0, borderWidth: 1.5, tension: 0.3 },
+            pointRadius: 0, borderWidth: 2, tension: 0.3, fill: false },
           { label: "p10-p90", data: [...Array(histDates.length).fill(null), ...fcP90],
             borderColor: "rgba(0,229,255,0)", backgroundColor: "rgba(0,229,255,0.12)",
             fill: "+1", pointRadius: 0 },

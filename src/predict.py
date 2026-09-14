@@ -62,6 +62,11 @@ def main(out: str = OUTPUT_PATH) -> int:
     last_ts = tsdf.index.get_level_values("timestamp").max()
     last_val = float(tsdf.loc["USD"]["target"].iloc[-1])
 
+    # Serie real reciente (últimos 30 días) para el gráfico del frontend.
+    history_series = []
+    for fecha, valor in tsdf.loc["USD"]["target"].tail(30).items():
+        history_series.append({"date": str(fecha.date()), "value": float(valor)})
+
     recipe = json.load(open(RECIPE_PATH))
     test_mase = None
     lb = recipe.get("leaderboard") or []
@@ -73,6 +78,7 @@ def main(out: str = OUTPUT_PATH) -> int:
         "item_id": "USD",
         "horizon_days": PREDICTION_LENGTH,
         "last_observed": {"date": str(last_ts.date()), "value": last_val},
+        "history_series": history_series,
         "forecast": [
             {
                 "date": str(ts.date()),
