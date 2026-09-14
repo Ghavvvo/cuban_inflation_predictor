@@ -1,4 +1,7 @@
-autogluon.timeseries
+# Pineado: predictor commiteado fue creado con 1.6.1.
+# AutoGluon no carga predictores de otra versión (no backward compat).
+# Al actualizar AutoGluon: refit del modelo y commitear nuevo predictor.
+autogluon.timeseries==1.6.1
 pandas
 numpy
 requests
