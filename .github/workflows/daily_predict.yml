@@ -24,6 +24,8 @@ jobs:
         run: python -m src.predict
         env:
           CUBANOMIC_TOKEN: ${{ secrets.CUBANOMIC_TOKEN }}
+      - name: Monitor (rellena actuals)
+        run: python -m src.monitor
       - name: Commit artifacts
         run: |
           git config user.name "github-actions[bot]"
