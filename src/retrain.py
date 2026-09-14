@@ -57,6 +57,7 @@ def main(reexplore: bool = False) -> int:
     best = lb["model"].iloc[0]
 
     recipe["last_retrain"] = pd.Timestamp.utcnow().isoformat()
+    recipe["best_model"] = best
     recipe["data_last_date"] = str(
         tsdf.index.get_level_values("timestamp").max().date()
     )

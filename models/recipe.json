@@ -8,7 +8,7 @@
   "excluded_model_types": [
     "Chronos"
   ],
-  "best_model": "Theta",
+  "best_model": "RecursiveTabular",
   "ensemble_weights": {},
   "leaderboard": [
     {

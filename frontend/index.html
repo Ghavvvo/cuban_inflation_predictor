@@ -79,6 +79,10 @@
   .metric .k { color: var(--muted); }
   .metric .v { font-size: 1.2rem; font-weight: 700; }
 
+  .steps { padding-left: 1.2rem; font-size: 0.9rem; }
+  .steps li { margin-bottom: 0.6rem; }
+  code { color: var(--cyan); font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+
   footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
   footer a { color: var(--cyan); text-decoration: none; }
   .banner { background: rgba(255,77,109,0.1); border: 1px solid var(--red); color: var(--red); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: none; }
@@ -112,6 +116,35 @@
   </section>
 
   <section class="card">
+    <h2>Modelo actual</h2>
+    <div id="modelBody" class="sub">cargando…</div>
+  </section>
+
+  <section class="card">
+    <h2>Cómo se obtienen las predicciones</h2>
+    <ol class="steps">
+      <li><strong>Datos:</strong> eltoque.com vía API cubanomic — valor <code>median</code> diario USD/CUP.</li>
+      <li><strong>Entrenamiento:</strong> AutoGluon TimeSeries (CPU) entrena y compite varios modelos (Theta, ETS, RecursiveTabular, Chronos2…).</li>
+      <li><strong>Validación:</strong> los últimos 30 días quedan fuera del entrenamiento (hold-out) y se evalúan con backtesting. Métrica MASE.</li>
+      <li><strong>Predicción:</strong> 7 días hacia adelante, con banda p10-p90 (80% de confianza).</li>
+      <li><strong>Cadencia:</strong> predict diario (08:23 Cuba) · retrain semanal (domingo) · re-exploración manual (3-6 meses).</li>
+    </ol>
+    <p class="sub">La API publica el dato consolidado con 1-2 días de atraso; la fecha exacta de cobertura se muestra arriba.</p>
+  </section>
+
+  <section class="card">
+    <h2>Métricas</h2>
+    <table>
+      <thead><tr><th>Métrica</th><th>Qué significa</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">MASE</td><td>Error escalado vs el baseline naive. &lt;1 = mejor que repetir el último valor.</td></tr>
+        <tr><td class="mono">MAE 7d / 30d</td><td>Error medio absoluto en CUP, ventana rodante de 7 / 30 días.</td></tr>
+        <tr><td class="mono">p10 / p90</td><td>Percentiles de la predicción: el modelo estima 80% de probabilidad de que el valor real caiga entre ambos.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
     <h2>Auditoría pública</h2>
     <div class="metrics" id="metrics"></div>
     <div style="overflow-x:auto;">
@@ -131,6 +164,7 @@
 
 <script>
 const BASE = "../output/";
+const RECIPE = "../models/recipe.json";
 
 async function loadJSON(path) {
   const r = await fetch(path);
@@ -139,6 +173,38 @@ async function loadJSON(path) {
 }
 
 function fmt(n) { return n == null ? "—" : Number(n).toLocaleString("es-CU", {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
+
+function renderModel(recipe) {
+  const lb = recipe.leaderboard || [];
+  const best = lb[0];
+  const bestName = best ? best.model : "—";
+  const bestMase = best && best.score_test != null ? -best.score_test : null;
+  const b = recipe.baselines || {};
+  const naiveMase = b.naive ? b.naive.MASE : null;
+  const retrainDate = (recipe.last_retrain || recipe.frozen_at || "—").slice(0, 10);
+
+  let html =
+    `<div class="metrics">` +
+    `<div class="metric"><span class="k">Modelo ganador</span> <span class="v mono">${bestName}</span></div>` +
+    `<div class="metric"><span class="k">MASE test</span> <span class="v mono">${bestMase != null ? bestMase.toFixed(3) : "—"}</span></div>` +
+    `<div class="metric"><span class="k">vs naive</span> <span class="v mono">${bestMase != null && naiveMase ? (100 * (1 - bestMase / naiveMase)).toFixed(0) + "% mejor" : "—"}</span></div>` +
+    `<div class="metric"><span class="k">Último retrain</span> <span class="v mono" style="font-size:1rem">${retrainDate}</span></div>` +
+    `</div>`;
+
+  if (lb.length) {
+    html += `<table><thead><tr><th>Modelo</th><th>MASE (test)</th></tr></thead><tbody>` +
+      lb.map(m => `<tr><td class="mono">${m.model}</td><td class="mono">${(-m.score_test).toFixed(3)}</td></tr>`).join("") +
+      `</tbody></table>`;
+  }
+
+  const bl = [];
+  if (b.naive) bl.push(`naive ${b.naive.MASE.toFixed(3)}`);
+  if (b["moving_avg_7"]) bl.push(`media móvil 7d ${b["moving_avg_7"].MASE.toFixed(3)}`);
+  if (bl.length) {
+    html += `<p class="sub" style="margin-top:1rem">Baselines (misma ventana de test): ${bl.join(" · ")}</p>`;
+  }
+  document.getElementById("modelBody").innerHTML = html;
+}
 
 async function main() {
   try {
@@ -170,6 +236,13 @@ async function main() {
     dEl.className = "mono " + (d >= 0 ? "up" : "down");
     document.getElementById("mase").textContent = pred.model.test_mase != null ? pred.model.test_mase.toFixed(3) : "—";
     document.getElementById("frozen").textContent = pred.model.recipe_frozen_at ? pred.model.recipe_frozen_at.slice(0, 10) : "—";
+
+    // modelo actual (recipe.json, opcional)
+    try {
+      renderModel(await loadJSON(RECIPE));
+    } catch (e) {
+      document.getElementById("modelBody").textContent = "receta no disponible";
+    }
 
     // history events
     const events = lines.split("\n").filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
