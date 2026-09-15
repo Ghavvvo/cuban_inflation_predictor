@@ -1,8 +1,9 @@
 {"type": "retrain", "at": "2026-09-14T15:59:11.672307+00:00", "best_model": "RecursiveTabular", "score_test": -0.5248630751656987}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-15", "predicted": 690.43, "actual": null}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-16", "predicted": 691.14, "actual": null}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-17", "predicted": 691.64, "actual": null}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-18", "predicted": 692.59, "actual": null}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-19", "predicted": 693.27, "actual": null}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-20", "predicted": 693.97, "actual": null}
-{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-21", "predicted": 694.28, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-14T17:14:10.578547+00:00", "date": "2026-09-15", "predicted": 690.43, "actual": 695.0}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-16", "predicted": 695.71, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-17", "predicted": 696.38, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-18", "predicted": 697.32, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-19", "predicted": 698.42, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-20", "predicted": 699.19, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-21", "predicted": 699.78, "actual": null}
+{"type": "prediction", "generated_at": "2026-09-15T15:54:13.065746+00:00", "date": "2026-09-22", "predicted": 700.56, "actual": null}
