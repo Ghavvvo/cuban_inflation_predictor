@@ -310,31 +310,40 @@ async function main() {
     const events = lines.split("\n").filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
     const preds = events.filter(e => e.type === "prediction" && e.actual != null);
 
-    // chart data — serie real desde predictions.json + forecast actual
+    // chart data — serie real + forecast actual + predicciones auditadas del pasado
     const hist = pred.history_series || [];
-    const histDates = hist.map(h => h.date);
-    const histValues = hist.map(h => h.value);
-    const fcDates = pred.forecast.map(f => f.date);
-    const fcMean = pred.forecast.map(f => f.mean);
-    const fcP10 = pred.forecast.map(f => f.p10);
-    const fcP90 = pred.forecast.map(f => f.p90);
+    const histByDate = Object.fromEntries(hist.map(h => [h.date, h.value]));
+    const fcByDate = Object.fromEntries(pred.forecast.map(f => [f.date, f]));
+    const auditByDate = Object.fromEntries(preds.map(e => [e.date, e.predicted]));
+    // reales de la auditoría si history_series no cubre esa fecha
+    preds.forEach(e => { if (histByDate[e.date] == null) histByDate[e.date] = e.actual; });
+
+    const allDates = [...new Set([
+      ...hist.map(h => h.date),
+      ...pred.forecast.map(f => f.date),
+      ...Object.keys(auditByDate),
+    ])].sort();
 
     const ctx = document.getElementById("chart");
     new Chart(ctx, {
       type: "line",
       data: {
-        labels: [...histDates, ...fcDates],
+        labels: allDates,
         datasets: [
-          { label: "Histórico (real)", data: [...histValues, ...Array(fcDates.length).fill(null)],
+          { label: "Histórico (real)", data: allDates.map(d => histByDate[d] ?? null),
             borderColor: "#e6f1ff", backgroundColor: "rgba(230,241,255,0.08)",
             pointRadius: 0, borderWidth: 1.5, tension: 0.3, fill: false },
-          { label: "Predicción (media)", data: [...Array(histDates.length).fill(null), ...fcMean],
+          { label: "Predicción pasada", data: allDates.map(d => auditByDate[d] ?? null),
+            borderColor: "#ffa726", borderDash: [3, 3],
+            pointRadius: 3, pointBackgroundColor: "#ffa726",
+            borderWidth: 1.5, tension: 0.3, fill: false, spanGaps: false },
+          { label: "Predicción (media)", data: allDates.map(d => fcByDate[d]?.mean ?? null),
             borderColor: "#00e5ff", borderDash: [6, 4],
             pointRadius: 0, borderWidth: 2, tension: 0.3, fill: false },
-          { label: "p10-p90", data: [...Array(histDates.length).fill(null), ...fcP90],
+          { label: "p10-p90", data: allDates.map(d => fcByDate[d]?.p90 ?? null),
             borderColor: "rgba(0,229,255,0)", backgroundColor: "rgba(0,229,255,0.12)",
             fill: "+1", pointRadius: 0 },
-          { label: "p10", data: [...Array(histDates.length).fill(null), ...fcP10],
+          { label: "p10", data: allDates.map(d => fcByDate[d]?.p10 ?? null),
             borderColor: "rgba(0,229,255,0)", pointRadius: 0 },
         ]
       },
