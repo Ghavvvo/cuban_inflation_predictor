@@ -3,388 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CubaRate — Predicción USD/CUP</title>
+<title>CubaRate / USD-CUP</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0e17;
-    --panel: #0d1220;
-    --border: #1b2337;
-    --cyan: #00e5ff;
-    --green: #00ff9d;
-    --red: #ff4d6d;
-    --text: #e6f1ff;
-    --muted: #6b7a99;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    background: radial-gradient(ellipse at 50% -10%, #10243e 0%, var(--bg) 55%);
-    color: var(--text);
-    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-    min-height: 100vh;
-    line-height: 1.5;
-  }
-  .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
-
-  header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 2.5rem; }
-  .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; }
-  .logo span { color: var(--cyan); }
-  .badge {
-    font-size: 0.7rem; font-weight: 700; letter-spacing: 1.5px;
-    border: 1px solid var(--green); color: var(--green);
-    padding: 0.25rem 0.6rem; border-radius: 999px;
-    text-shadow: 0 0 8px rgba(0,255,157,0.5);
-  }
-  .updated {
-    display: flex; flex-wrap: wrap; justify-content: flex-end;
-    gap: 0.4rem 0.9rem; font-size: 0.8rem; color: var(--text);
-  }
-  .updated strong { color: var(--muted); font-weight: 600; }
-  .sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.4rem; }
-
-  .hero {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem;
-    box-shadow: 0 0 40px rgba(0,229,255,0.07);
-  }
-  .hero .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); }
-  .hero .value {
-    font-size: 3.2rem; font-weight: 800; letter-spacing: -1px;
-    text-shadow: 0 0 24px rgba(0,229,255,0.35);
-  }
-  .hero .value small { font-size: 1.1rem; color: var(--muted); font-weight: 500; }
-  .hero-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-  .stat { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
-  .stat .k { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
-  .stat .v { font-size: 1.5rem; font-weight: 700; }
-  .up { color: var(--green); } .down { color: var(--red); }
-
-  .card {
-    background: var(--panel); border: 1px solid var(--border);
-    border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem;
-  }
-  .card h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; letter-spacing: 0.5px; }
-  .card h2::before { content: "▸ "; color: var(--cyan); }
-  .card h3 { font-size: 0.95rem; font-weight: 700; margin: 1.2rem 0 0.5rem; color: var(--cyan); }
-  .card h3:first-of-type { margin-top: 0; }
-  .card p { font-size: 0.9rem; color: var(--text); margin-bottom: 0.8rem; }
-
-  .chart-box { position: relative; height: 380px; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th, td { padding: 0.55rem 0.6rem; text-align: left; border-bottom: 1px solid var(--border); }
-  th { color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-  td.err { color: var(--red); }
-  tr.winner td { color: var(--green); font-weight: 700; }
-  tr.base td { color: var(--muted); font-style: italic; }
-
-  .metrics { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
-  .metric { font-size: 0.85rem; }
-  .metric .k { color: var(--muted); }
-  .metric .v { font-size: 1.2rem; font-weight: 700; }
-
-  .steps { padding-left: 1.2rem; font-size: 0.9rem; }
-  .steps li { margin-bottom: 0.6rem; }
-  code { color: var(--cyan); font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
-
-  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--muted); }
-  footer a { color: var(--cyan); text-decoration: none; }
-  .banner { background: rgba(255,77,109,0.1); border: 1px solid var(--red); color: var(--red); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; display: none; }
+  :root { --paper:#f4efe5; --paper-deep:#e8dfd0; --ink:#171716; --muted:#716e66; --line:#cfc5b5; --coral:#e65d43; --coral-soft:#f3c5b8; --teal:#17665f; --teal-soft:#b9d8ce; --yellow:#e4b64b; --white:#fffdf8; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--paper); color:var(--ink); font-family:"Space Grotesk",sans-serif; line-height:1.45; }
+  body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.14; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E"); mix-blend-mode:multiply; z-index:5; }
+  a { color:inherit; } :focus-visible { outline:3px solid var(--coral); outline-offset:4px; } .mono { font-family:"DM Mono",monospace; }
+  .shell { max-width:1240px; margin:0 auto; padding:28px 34px 70px; }
+  .masthead { display:flex; align-items:center; justify-content:space-between; gap:20px; padding-bottom:19px; border-bottom:2px solid var(--ink); }
+  .brand { display:flex; align-items:baseline; gap:13px; } .brand-name { font:800 1.35rem/1 "Syne",sans-serif; letter-spacing:-.04em; } .brand-note { color:var(--muted); font-size:.76rem; }
+  .status { display:flex; align-items:center; gap:9px; color:var(--teal); font-size:.76rem; } .status-dot { width:9px; height:9px; background:var(--teal); border-radius:50%; box-shadow:0 0 0 4px var(--teal-soft); } .method-link { color:var(--teal); font-size:.76rem; text-decoration:underline; text-underline-offset:3px; } .timestamp { color:var(--muted); font-size:.7rem; text-align:right; }
+  .notice { display:none; margin:18px 0 0; padding:12px 15px; border-left:5px solid var(--coral); background:var(--coral-soft); font-size:.85rem; }
+  .hero { display:grid; grid-template-columns:minmax(0,1.17fr) minmax(330px,.83fr); min-height:440px; border-bottom:1px solid var(--line); }
+  .hero-main { padding:58px 42px 45px 0; border-right:1px solid var(--line); display:flex; flex-direction:column; justify-content:space-between; }
+  .eyebrow { margin:0 0 22px; color:var(--teal); font-size:.77rem; font-weight:700; letter-spacing:.08em; } h1 { max-width:650px; margin:0; font:800 clamp(3rem,7vw,6.2rem)/.9 "Syne",sans-serif; letter-spacing:-.075em; }
+  .rate-row { display:flex; align-items:end; gap:13px; margin-top:42px; } .rate { font:600 clamp(3.4rem,7vw,6.8rem)/.82 "DM Mono",monospace; letter-spacing:-.1em; } .currency { padding-bottom:7px; color:var(--coral); font-size:.88rem; font-weight:700; }
+  .hero-side { padding:36px 0 34px 35px; display:flex; flex-direction:column; justify-content:space-between; } .side-title { display:flex; justify-content:space-between; gap:10px; padding-bottom:13px; border-bottom:1px solid var(--ink); font-weight:700; } .side-title span { color:var(--muted); font-size:.72rem; font-weight:500; }
+  .forecast-list { list-style:none; padding:0; margin:0; } .forecast-list li { display:grid; grid-template-columns:1fr auto auto; gap:18px; align-items:baseline; padding:14px 0; border-bottom:1px solid var(--line); font-size:.83rem; } .forecast-list li:first-child { background:var(--yellow); margin:0 -12px; padding-inline:12px; } .forecast-date { color:var(--muted); } .forecast-value { font:500 1rem "DM Mono",monospace; } .forecast-band { color:var(--muted); font:.68rem "DM Mono",monospace; }
+  .hero-foot { display:flex; justify-content:space-between; gap:20px; padding-top:20px; color:var(--muted); font-size:.73rem; } .hero-foot strong { color:var(--ink); font-weight:600; }
+  .section { padding:38px 0; border-bottom:1px solid var(--line); } .section-heading { display:flex; align-items:baseline; justify-content:space-between; gap:24px; margin-bottom:22px; } h2 { margin:0; font:700 1.45rem/1 "Syne",sans-serif; letter-spacing:-.045em; } .section-heading p { max-width:410px; margin:0; color:var(--muted); font-size:.8rem; text-align:right; }
+  .chart-frame { height:410px; padding:19px 7px 0 0; background:rgba(255,253,248,.38); border-top:1px solid var(--ink); } .chart-frame canvas { width:100% !important; height:100% !important; }
+  .analysis-grid { display:grid; grid-template-columns:1.4fr .6fr; gap:1px; background:var(--line); border:1px solid var(--line); } .analysis-item { min-height:135px; padding:22px; background:var(--paper); } .analysis-item:first-child { background:var(--teal); color:var(--white); } .analysis-label { color:var(--muted); font-size:.7rem; } .analysis-item:first-child .analysis-label { color:var(--teal-soft); } .analysis-value { margin-top:15px; font:500 2rem/1 "DM Mono",monospace; } .analysis-caption { margin-top:9px; color:var(--muted); font-size:.77rem; } .analysis-item:first-child .analysis-caption { color:var(--teal-soft); } .analysis-alert { color:var(--coral); font-weight:700; }
+  .model-layout { display:grid; grid-template-columns:.64fr 1.36fr; gap:42px; align-items:start; } .model-copy { max-width:330px; color:var(--muted); font-size:.9rem; } .model-copy p { margin:0 0 17px; } .model-copy strong { color:var(--ink); } .model-name { margin:0 0 20px; font:700 2.6rem/.92 "Syne",sans-serif; letter-spacing:-.065em; } .model-meta { display:grid; grid-template-columns:1fr 1fr; gap:10px; } .meta-block { padding-top:11px; border-top:1px solid var(--ink); } .meta-block span { display:block; color:var(--muted); font-size:.69rem; } .meta-block strong { display:block; margin-top:4px; font:500 .88rem "DM Mono",monospace; }
+  .table-wrap { overflow-x:auto; border-top:1px solid var(--ink); } table { width:100%; min-width:530px; border-collapse:collapse; font-size:.8rem; } th,td { padding:12px 10px; text-align:left; border-bottom:1px solid var(--line); } th { color:var(--muted); font-size:.68rem; font-weight:500; } td:last-child,th:last-child { text-align:right; } tr.winner { background:var(--yellow); font-weight:700; } tr.base { color:var(--muted); }
+  .audit-head { display:flex; align-items:end; justify-content:space-between; gap:25px; } .audit-note { max-width:360px; color:var(--muted); font-size:.8rem; } .audit-table { margin-top:24px; } .audit-table td.err { color:var(--coral); font-weight:600; } .footnote { padding-top:24px; color:var(--muted); font-size:.72rem; } .footnote a { color:var(--teal); font-weight:600; }
+  @media (max-width:960px) { .hero { display:block; } .hero-main { min-height:0; padding:45px 0 34px; border-right:0; } .hero-side { padding:32px 0 26px; } }
+  @media (max-width:800px) { .shell { padding:20px 18px 50px; } .masthead { align-items:flex-start; flex-wrap:wrap; } .timestamp { width:100%; text-align:left; } .hero-main { padding:35px 0 30px; } .hero-foot { flex-wrap:wrap; } .section { padding:30px 0; } .section-heading,.audit-head { display:block; } .section-heading p { margin-top:10px; text-align:left; } .chart-frame { height:300px; } .analysis-grid,.model-layout { grid-template-columns:1fr; } .model-layout { gap:28px; } .model-copy { max-width:none; } }
+  @media (prefers-reduced-motion:no-preference) { .hero-main > *,.hero-side > * { animation:enter .65s both; } .hero-side > * { animation-delay:.12s; } @keyframes enter { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } } }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="logo">Cuba<span>Rate</span></div>
-    <div class="badge">EXPERIMENTAL</div>
-    <div class="updated mono" id="updated">cargando…</div>
-  </header>
-
-  <div class="banner" id="banner">Datos no disponibles. Reintentar más tarde.</div>
-
-  <section class="hero">
-    <div class="label">USD/CUP — último observado</div>
-    <div class="value mono"><span id="lastValue">—</span> <small>CUP</small></div>
-    <div class="sub mono" id="dataCoverage"></div>
-    <div class="hero-grid">
-      <div class="stat"><div class="k">Predicción 7 días</div><div class="v mono" id="pred7">—</div></div>
-      <div class="stat"><div class="k">Variación 7d</div><div class="v mono" id="delta7">—</div></div>
-      <div class="stat"><div class="k">MASE test</div><div class="v mono" id="mase">—</div></div>
-      <div class="stat"><div class="k">Receta congelada</div><div class="v mono" id="frozen" style="font-size:1rem">—</div></div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Serie y predicción</h2>
-    <div class="chart-box"><canvas id="chart"></canvas></div>
-  </section>
-
-  <section class="card">
-    <h2>Modelo actual</h2>
-    <div id="modelBody" class="sub">cargando…</div>
-  </section>
-
-  <section class="card">
-    <h2>Cómo se obtienen las predicciones</h2>
-
-    <h3>Objetivo</h3>
-    <p>Este proyecto pronostica la tasa de cambio informal del dólar estadounidense
-    frente al peso cubano (USD/CUP), un mercado no regulado cuyo precio se determina en
-    plataformas como eltoque.com. El objetivo es producir un pronóstico de 7 días,
-    actualizado diariamente, con una cuantificación honesta de la incertidumbre.</p>
-
-    <h3>Datos</h3>
-    <p>La fuente primaria es la API pública de cubanomic, que agrega las cotizaciones
-    publicadas por eltoque.com. Cada día se registra un valor representativo del mercado:
-    la <strong>mediana</strong> de todas las cotizaciones observadas ese día (el valor que
-    eltoque.com publica como "tasa del día"). Se elige la mediana, y no la media, porque es
-    robusta frente a valores atípicos: una sola cotización extrema (por ejemplo, un vendedor
-    pidiendo 860 CUP) distorsiona la media, pero apenas afecta a la mediana. La serie se
-    reconstruye en frecuencia diaria y los días sin observaciones se rellenan con el último
-    valor conocido (<em>forward-fill</em>).</p>
-    <p>Existe una limitación estructural: la API consolida y publica el dato diario con uno
-    o dos días de atraso. Por eso la "fecha de cobertura" de la cabecera puede ser anterior
-    a hoy; el modelo trabaja siempre con el último dato consolidado disponible.</p>
-
-    <h3>Modelado</h3>
-    <p>El motor es AutoGluon TimeSeries, una biblioteca que entrena y evalúa
-    simultáneamente una batería de modelos de series temporales — suavizado exponencial
-    (ETS), descomposición de Theta, métodos tabulares sobre características rezagadas
-    (RecursiveTabular, DirectTabular) y modelos estacionales ingenuos — y construye un
-    conjunto (ensemble) ponderado con los mejores. El entrenamiento se ejecuta en CPU. El
-    target es la mediana diaria; el horizonte, 7 días.</p>
-
-    <h3>Validación</h3>
-    <p>Para medir el rendimiento sin inflar los resultados, los últimos 30 días de la serie
-    se apartan del entrenamiento (hold-out) y se usan exclusivamente como conjunto de
-    prueba. Sobre esa ventana se calcula el MASE (Mean Absolute Scaled Error): el error del
-    modelo dividido entre el error de un predictor ingenuo estacional. Un MASE de 1.0
-    significa "igual de bueno que repetir el valor de hace 7 días"; por debajo de 1.0, el
-    modelo aporta valor. El modelo actual alcanza un MASE de 0.525, aproximadamente un 50%
-    mejor que el baseline naïve. El entrenamiento usa además backtesting interno para
-    seleccionar los modelos y ponderar el ensemble.</p>
-
-    <h3>Predicción e incertidumbre</h3>
-    <p>Cada día el modelo produce una distribución de valores posibles para cada uno de los
-    7 días siguientes, no un único número. De esa distribución se reporta la media (el
-    pronóstico central) y los percentiles 10 y 90 (p10 y p90): el intervalo entre ambos es
-    la banda donde el modelo estima que caerá el valor real con un 80% de probabilidad. Una
-    banda ancha indica incertidumbre alta; una estrecha, confianza alta. El pronóstico
-    central no es una promesa: es el punto medio de una distribución, y la banda es el
-    recordatorio visible de que el futuro no es determinista.</p>
-
-    <h3>Cadencia de actualización</h3>
-    <p><strong>Diario</strong> (~08:00 hora de Cuba): se descarga el dato nuevo y se
-    regenera el pronóstico de 7 días. <strong>Semanal</strong> (domingo): se reentrena el
-    modelo con toda la serie acumulada, para que incorpore el régimen de precios más
-    reciente. <strong>Periódico</strong> (manual, cada 3-6 meses o ante degradación
-    detectada): se repite la exploración completa de modelos en busca de una configuración
-    mejor.</p>
-
-    <h3>Limitaciones conocidas</h3>
-    <p>La serie es corta (alrededor de dos años) y el mercado informal está sujeto a
-    choques estructurales — cambios de política monetaria, disponibilidad de divisas,
-    eventos macroeconómicos — que ningún modelo estadístico puede anticipar. El modelo es,
-    por tanto, una estimación del patrón reciente, no una predicción de eventos. Nada de
-    esto constituye consejo financiero.</p>
-  </section>
-
-  <section class="card">
-    <h2>Métricas</h2>
-    <table>
-      <thead><tr><th>Métrica</th><th>Qué significa</th></tr></thead>
-      <tbody>
-        <tr><td class="mono">MASE</td><td>Error escalado vs el baseline naive. &lt;1 = mejor que repetir el último valor.</td></tr>
-        <tr><td class="mono">MAE 7d / 30d</td><td>Error medio absoluto en CUP, ventana rodante de 7 / 30 días.</td></tr>
-        <tr><td class="mono">p10 / p90</td><td>Percentiles de la predicción: el modelo estima 80% de probabilidad de que el valor real caiga entre ambos.</td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <section class="card">
-    <h2>Auditoría pública</h2>
-    <div class="metrics" id="metrics"></div>
-    <div style="overflow-x:auto;">
-      <table>
-        <thead><tr><th>Fecha</th><th>Predicción</th><th>Real</th><th>Error</th></tr></thead>
-        <tbody id="auditBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <footer>
-    <strong>No es consejo financiero.</strong> Modelo experimental con fines
-    educativos. Datos: eltoque.com vía API cubanomic. Ver
-    <a href="https://github.com" id="repoLink" target="_blank">repositorio</a>.
-  </footer>
-</div>
-
+<main class="shell">
+  <header class="masthead"><div class="brand"><div class="brand-name">CubaRate</div></div><a class="method-link" href="metodo.html">Método</a><div class="timestamp mono" id="updated">cargando...</div></header>
+  <div class="notice" id="banner">No se pudo cargar la cotización. Revisa los archivos de datos.</div>
+  <section class="hero" aria-labelledby="hero-title"><div class="hero-main"><div><h1 id="hero-title">Tipo de cambio</h1></div><div><div class="rate-row"><div class="rate" id="lastValue">—</div><div class="currency">CUP<br>por USD</div></div><div class="hero-foot"><span id="dataCoverage">dato consolidado —</span><span>variación a 7 días <strong id="delta7">—</strong></span></div></div></div><div class="hero-side"><div class="side-title"><span>pronóstico</span><span>7 días</span></div><ol class="forecast-list" id="forecastList"></ol><div class="hero-foot"><span>MASE <strong id="mase">—</strong></span><span>reentrenado <strong id="frozen">—</strong></span></div></div></section>
+  <section class="section" aria-labelledby="chart-title"><div class="section-heading"><h2 id="chart-title">Serie y pronóstico</h2><p>Valores observados, media pronosticada y rango p10-p90.</p></div><div class="chart-frame"><canvas id="chart" aria-label="Serie histórica y pronóstico USD/CUP"></canvas></div></section>
+  <section class="section" aria-labelledby="model-title"><div class="section-heading"><h2 id="model-title">Modelo</h2><p>Leaderboard de la receta congelada.</p></div><div class="model-layout"><div class="model-copy"><h3 class="model-name" id="modelName">—</h3><div class="model-meta"><div class="meta-block"><span>último reentrenamiento</span><strong id="modelRetrain">—</strong></div></div></div><div class="table-wrap"><table><thead><tr><th>modelo</th><th>MASE (7 días)</th></tr></thead><tbody id="modelRows"></tbody></table></div></div></section>
+  <section class="section" aria-labelledby="audit-title"><div class="audit-head"><div><h2 id="audit-title">Auditoría</h2><p class="audit-note">Comparación entre pronóstico y valor observado.</p></div><div class="mono" id="metrics">—</div></div><div class="table-wrap audit-table"><table><thead><tr><th>fecha</th><th>pronóstico</th><th>real</th><th>error</th></tr></thead><tbody id="auditBody"></tbody></table></div></section>
+  <footer class="footnote">Proyecto académico. Datos: eltoque.com vía API de cubanomic. <a href="metodo.html">Documentación del método</a>.</footer>
+</main>
 <script>
-const BASE = "../output/";
-const RECIPE = "../models/recipe.json";
-
-async function loadJSON(path) {
-  const r = await fetch(path);
-  if (!r.ok) throw new Error(path + " -> " + r.status);
-  return r.json();
-}
-
-function fmt(n) { return n == null ? "—" : Number(n).toLocaleString("es-CU", {minimumFractionDigits: 2, maximumFractionDigits: 2}); }
-
-function renderModel(recipe) {
-  const lb = recipe.leaderboard || [];
-  const best = lb[0];
-  const bestName = best ? best.model : "—";
-  const bestMase = best && best.score_test != null ? -best.score_test : null;
-  const b = recipe.baselines || {};
-  const retrainDate = (recipe.last_retrain || recipe.frozen_at || "—").slice(0, 10);
-
-  let html =
-    `<div class="metrics">` +
-    `<div class="metric"><span class="k">Modelo ganador</span> <span class="v mono">${bestName}</span></div>` +
-    `<div class="metric"><span class="k">MASE test</span> <span class="v mono">${bestMase != null ? bestMase.toFixed(3) : "—"}</span></div>` +
-    `<div class="metric"><span class="k">Último retrain</span> <span class="v mono" style="font-size:1rem">${retrainDate}</span></div>` +
-    `</div>`;
-
-  html += `<p>La tabla ordena los modelos por su error en los últimos 30 días, medido con
-    <strong>MASE</strong>: un valor por debajo de 1.0 significa que el modelo supera al
-    predictor más simple (repetir el valor de hace 7 días). El ganador va marcado con ★.
-    Los dos renglones finales son los <em>baselines</em>: el piso de referencia que todo
-    modelo debe batir para considerarse útil.</p>`;
-
-  const rows = lb.map(m => {
-    const isBest = m.model === bestName;
-    return `<tr${isBest ? ' class="winner"' : ''}><td class="mono">${m.model}${isBest ? ' ★' : ''}</td><td class="mono">${(-m.score_test).toFixed(3)}</td></tr>`;
-  }).join("");
-
-  const baseRows = [];
-  if (b.naive) baseRows.push(`<tr class="base"><td class="mono">naive (baseline)</td><td class="mono">${b.naive.MASE.toFixed(3)}</td></tr>`);
-  if (b["moving_avg_7"]) baseRows.push(`<tr class="base"><td class="mono">media móvil 7d (baseline)</td><td class="mono">${b["moving_avg_7"].MASE.toFixed(3)}</td></tr>`);
-
-  html += `<table><thead><tr><th>Modelo</th><th>MASE (test)</th></tr></thead><tbody>` +
-    rows + baseRows.join("") + `</tbody></table>`;
-
-  document.getElementById("modelBody").innerHTML = html;
-}
-
-async function main() {
-  try {
-    const [pred, lines] = await Promise.all([
-      loadJSON(BASE + "predictions.json"),
-      (await fetch(BASE + "history.jsonl")).text()
-    ]);
-    document.getElementById("banner").style.display = "none";
-
-    // header — cobertura de datos (importante) + generación (secundario)
-    const genStr = new Date(pred.generated_at).toLocaleString("es-CU");
-    document.getElementById("updated").innerHTML =
-      `<span><strong>Datos hasta:</strong> ${pred.last_observed.date}</span>` +
-      `<span><strong>Predicción actualizada:</strong> ${genStr}</span>`;
-
-    // hero — subtítulo con fecha del dato consolidado
-    document.getElementById("dataCoverage").textContent =
-      `dato consolidado del ${pred.last_observed.date}`;
-
-    // hero
-    const last = pred.last_observed.value;
-    const p7 = pred.forecast[pred.forecast.length - 1];
-    document.getElementById("lastValue").textContent = fmt(last);
-    document.getElementById("pred7").textContent = fmt(p7.mean);
-    const d = p7.mean - last;
-    const dpct = (d / last) * 100;
-    const dEl = document.getElementById("delta7");
-    dEl.textContent = (d >= 0 ? "+" : "") + dpct.toFixed(2) + "%";
-    dEl.className = "mono " + (d >= 0 ? "up" : "down");
-    document.getElementById("mase").textContent = pred.model.test_mase != null ? pred.model.test_mase.toFixed(3) : "—";
-    document.getElementById("frozen").textContent = pred.model.recipe_frozen_at ? pred.model.recipe_frozen_at.slice(0, 10) : "—";
-
-    // modelo actual (recipe.json, opcional)
-    try {
-      renderModel(await loadJSON(RECIPE));
-    } catch (e) {
-      document.getElementById("modelBody").textContent = "receta no disponible";
-    }
-
-    // history events
-    const events = lines.split("\n").filter(Boolean).map(l => { try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
-    const preds = events.filter(e => e.type === "prediction" && e.actual != null);
-
-    // chart data — serie real + forecast actual + predicciones auditadas del pasado
-    const hist = pred.history_series || [];
-    const histByDate = Object.fromEntries(hist.map(h => [h.date, h.value]));
-    const fcByDate = Object.fromEntries(pred.forecast.map(f => [f.date, f]));
-    const auditByDate = Object.fromEntries(preds.map(e => [e.date, e.predicted]));
-    // reales de la auditoría si history_series no cubre esa fecha
-    preds.forEach(e => { if (histByDate[e.date] == null) histByDate[e.date] = e.actual; });
-
-    const allDates = [...new Set([
-      ...hist.map(h => h.date),
-      ...pred.forecast.map(f => f.date),
-      ...Object.keys(auditByDate),
-    ])].sort();
-
-    const ctx = document.getElementById("chart");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: allDates,
-        datasets: [
-          { label: "Histórico (real)", data: allDates.map(d => histByDate[d] ?? null),
-            borderColor: "#e6f1ff", backgroundColor: "rgba(230,241,255,0.08)",
-            pointRadius: 0, borderWidth: 1.5, tension: 0.3, fill: false },
-          { label: "Predicción pasada", data: allDates.map(d => auditByDate[d] ?? null),
-            borderColor: "#ffa726", borderDash: [3, 3],
-            pointRadius: 3, pointBackgroundColor: "#ffa726",
-            borderWidth: 1.5, tension: 0.3, fill: false, spanGaps: false },
-          { label: "Predicción (media)", data: allDates.map(d => fcByDate[d]?.mean ?? null),
-            borderColor: "#00e5ff", borderDash: [6, 4],
-            pointRadius: 0, borderWidth: 2, tension: 0.3, fill: false },
-          { label: "p10-p90", data: allDates.map(d => fcByDate[d]?.p90 ?? null),
-            borderColor: "rgba(0,229,255,0)", backgroundColor: "rgba(0,229,255,0.12)",
-            fill: "+1", pointRadius: 0 },
-          { label: "p10", data: allDates.map(d => fcByDate[d]?.p10 ?? null),
-            borderColor: "rgba(0,229,255,0)", pointRadius: 0 },
-        ]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        interaction: { mode: "index", intersect: false },
-        plugins: {
-          legend: { labels: { color: "#6b7a99", boxWidth: 12 } },
-          tooltip: { mode: "index", intersect: false }
-        },
-        scales: {
-          x: { ticks: { color: "#6b7a99", maxTicksLimit: 10 }, grid: { color: "rgba(27,35,55,0.5)" } },
-          y: { ticks: { color: "#6b7a99" }, grid: { color: "rgba(27,35,55,0.5)" } }
-        }
-      }
-    });
-
-    // audit table
-    const rows = preds.slice().reverse().slice(0, 30);
-    document.getElementById("auditBody").innerHTML = rows.map(e => {
-      const err = (e.actual - e.predicted).toFixed(2);
-      const errAbs = Math.abs(e.actual - e.predicted);
-      return `<tr><td class="mono">${e.date}</td><td class="mono">${fmt(e.predicted)}</td><td class="mono">${fmt(e.actual)}</td><td class="mono err">${errAbs.toFixed(2)}</td>`;
-    }).join("");
-
-    // metrics
-    if (preds.length) {
-      const errs = preds.map(e => Math.abs(e.actual - e.predicted));
-      const mae7 = errs.slice(-7).reduce((a,b)=>a+b,0) / Math.min(7, errs.length);
-      const mae30 = errs.slice(-30).reduce((a,b)=>a+b,0) / Math.min(30, errs.length);
-      document.getElementById("metrics").innerHTML =
-        `<div class="metric"><span class="k">MAE 7d</span> <span class="v mono">${mae7.toFixed(2)}</span></div>` +
-        `<div class="metric"><span class="k">MAE 30d</span> <span class="v mono">${mae30.toFixed(2)}</span></div>` +
-        `<div class="metric"><span class="k">Predicciones auditables</span> <span class="v mono">${preds.length}</span></div>`;
-    }
-  } catch (err) {
-    document.getElementById("banner").style.display = "block";
-    console.error(err);
-  }
-}
-
+const BASE = "../output/"; const RECIPE = "../models/recipe.json";
+async function loadJSON(path) { const response = await fetch(path); if (!response.ok) throw new Error(path + " -> " + response.status); return response.json(); }
+function fmt(value, digits = 2) { return value == null ? "—" : Number(value).toLocaleString("es-CU", { minimumFractionDigits:digits, maximumFractionDigits:digits }); }
+function shortDate(value) { return value ? new Date(value.includes("T") ? value : value + "T12:00:00").toLocaleDateString("es-CU", { day:"2-digit", month:"short" }).replace(".", "") : "—"; }
+function renderForecast(forecast) { document.getElementById("forecastList").innerHTML = forecast.map((item,index) => `<li><span class="forecast-date">${index === 0 ? "mañana" : shortDate(item.date)}</span><strong class="forecast-value">${fmt(item.mean)}</strong><span class="forecast-band">${fmt(item.p10,0)}-${fmt(item.p90,0)}</span></li>`).join(""); }
+function renderModel(recipe) { const leaderboard = recipe.leaderboard || []; const best = leaderboard[0]; const bestName = best ? best.model : "—"; const rows = leaderboard.map(model => { const isBest = model.model === bestName; return `<tr${isBest ? ' class="winner"' : ''}><td>${model.model}${isBest ? " ★" : ""}</td><td class="mono">${model.score_test == null ? "—" : Math.abs(model.score_test).toFixed(3)}</td></tr>`; }); const baselines = recipe.baselines || {}; if (baselines.naive) rows.push(`<tr class="base"><td>naive / referencia</td><td class="mono">${baselines.naive.MAE.toFixed(3)}</td></tr>`); if (baselines.moving_avg_7) rows.push(`<tr class="base"><td>media móvil / referencia</td><td class="mono">${baselines.moving_avg_7.MAE.toFixed(3)}</td></tr>`); document.getElementById("modelName").textContent = bestName; document.getElementById("modelRetrain").textContent = shortDate(recipe.last_retrain || recipe.frozen_at); document.getElementById("modelRows").innerHTML = rows.join(""); }
+function renderMetrics(predictions) { document.getElementById("metrics").textContent = `${predictions.length} predicciones con dato real`; document.getElementById("auditBody").innerHTML = predictions.slice().reverse().slice(0,30).map(item => `<tr><td class="mono">${item.date}</td><td class="mono">${fmt(item.predicted)}</td><td class="mono">${fmt(item.actual)}</td><td class="mono err">${fmt(Math.abs(item.actual - item.predicted))}</td></tr>`).join(""); }
+function renderChart(prediction, predictions) { const history = prediction.history_series || []; const historyByDate = Object.fromEntries(history.map(item => [item.date,item.value])); const forecastByDate = Object.fromEntries(prediction.forecast.map(item => [item.date,item])); const auditByDate = Object.fromEntries(predictions.map(item => [item.date,item.predicted])); predictions.forEach(item => { if (historyByDate[item.date] == null) historyByDate[item.date] = item.actual; }); const dates = [...new Set([...history.map(item => item.date),...prediction.forecast.map(item => item.date),...Object.keys(auditByDate)])].sort(); new Chart(document.getElementById("chart"), { type:"line", data:{ labels:dates, datasets:[ {label:"dato real",data:dates.map(date => historyByDate[date] ?? null),borderColor:"#171716",backgroundColor:"rgba(23,23,22,.06)",pointRadius:0,borderWidth:2,tension:.24,fill:false}, {label:"pronóstico pasado",data:dates.map(date => auditByDate[date] ?? null),borderColor:"#e65d43",borderDash:[4,4],pointRadius:3,pointBackgroundColor:"#e65d43",borderWidth:1.5,tension:.24}, {label:"pronóstico",data:dates.map(date => forecastByDate[date]?.mean ?? null),borderColor:"#17665f",borderDash:[7,4],pointRadius:0,borderWidth:2.5,tension:.24}, {label:"p90",data:dates.map(date => forecastByDate[date]?.p90 ?? null),borderColor:"rgba(23,102,95,0)",backgroundColor:"rgba(23,102,95,.16)",pointRadius:0,fill:"+1"}, {label:"p10",data:dates.map(date => forecastByDate[date]?.p10 ?? null),borderColor:"rgba(23,102,95,0)",pointRadius:0} ]}, options:{responsive:true,maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{labels:{color:"#716e66",boxWidth:12,font:{family:"Space Grotesk"},generateLabels:chart => { const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart); return labels.filter(item => item.datasetIndex < 3).concat([{text:"intervalo p10-p90",fillStyle:"rgba(23,102,95,.16)",strokeStyle:"#17665f",lineWidth:1,datasetIndex:3,hidden:!chart.isDatasetVisible(3) || !chart.isDatasetVisible(4)}]); }},onClick:(event,legendItem,legend) => { const chart = legend.chart; if (legendItem.datasetIndex === 3) { [3,4].forEach(index => { chart.setDatasetVisibility(index, !chart.isDatasetVisible(index)); }); chart.update(); } else { const index = legendItem.datasetIndex; chart.setDatasetVisibility(index, !chart.isDatasetVisible(index)); chart.update(); } }},tooltip:{mode:"index",intersect:false}},scales:{x:{ticks:{color:"#716e66",maxTicksLimit:10,font:{family:"DM Mono"}},grid:{color:"rgba(207,197,181,.65)"}},y:{ticks:{color:"#716e66",font:{family:"DM Mono"}},grid:{color:"rgba(207,197,181,.65)"}}}} }); }
+async function main() { try { const [prediction,historyText,recipe] = await Promise.all([loadJSON(BASE+"predictions.json"),(await fetch(BASE+"history.jsonl")).text(),loadJSON(RECIPE)]); const events = historyText.split("\n").filter(Boolean).map(line => { try { return JSON.parse(line); } catch { return null; } }).filter(Boolean); const predictions = events.filter(event => event.type === "prediction" && event.actual != null); const last = prediction.last_observed.value; const finalForecast = prediction.forecast[prediction.forecast.length - 1]; const delta = ((finalForecast.mean-last)/last)*100; document.getElementById("updated").textContent = `actualizado ${new Date(prediction.generated_at).toLocaleString("es-CU")}`; document.getElementById("dataCoverage").textContent = `dato consolidado del ${prediction.last_observed.date}`; document.getElementById("lastValue").textContent = fmt(last); document.getElementById("delta7").textContent = `${delta >= 0 ? "+" : ""}${delta.toFixed(2)}%`; document.getElementById("delta7").style.color = delta >= 0 ? "var(--coral)" : "var(--teal)"; document.getElementById("mase").textContent = prediction.model.test_mase == null ? "—" : Math.abs(prediction.model.test_mase).toFixed(3); document.getElementById("frozen").textContent = shortDate(prediction.model.last_retrain || prediction.model.recipe_frozen_at); renderForecast(prediction.forecast); renderModel(recipe); renderMetrics(predictions); renderChart(prediction,predictions); } catch (error) { document.getElementById("banner").style.display = "block"; console.error(error); } }
 main();
 </script>
 </body>

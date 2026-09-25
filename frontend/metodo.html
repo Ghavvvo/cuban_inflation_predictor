@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CubaRate / Método</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --paper:#f4efe5; --ink:#171716; --muted:#716e66; --line:#cfc5b5; --teal:#17665f; --coral:#e65d43; }
+  * { box-sizing:border-box; }
+  body { max-width:920px; margin:0 auto; padding:28px 34px 70px; background:var(--paper); color:var(--ink); font-family:"Space Grotesk",sans-serif; line-height:1.65; }
+  a { color:var(--teal); text-underline-offset:3px; }
+  :focus-visible { outline:3px solid var(--coral); outline-offset:4px; }
+  header { display:flex; justify-content:space-between; align-items:baseline; gap:20px; padding-bottom:18px; border-bottom:2px solid var(--ink); }
+  .brand { font:800 1.35rem/1 "Syne",sans-serif; letter-spacing:-.04em; }
+  .back { color:var(--teal); font-size:.8rem; }
+  main { max-width:720px; padding-top:70px; }
+  .eyebrow { color:var(--teal); font-size:.75rem; font-weight:700; letter-spacing:.08em; }
+  h1 { margin:14px 0 22px; font:800 clamp(3rem,8vw,6rem)/.9 "Syne",sans-serif; letter-spacing:-.075em; }
+  .lead { max-width:600px; color:var(--muted); font-size:1.05rem; }
+  section { margin-top:62px; padding-top:22px; border-top:1px solid var(--line); }
+  h2 { margin:0 0 15px; font:700 1.35rem/1 "Syne",sans-serif; letter-spacing:-.04em; }
+  h3 { margin:30px 0 7px; font-size:1rem; }
+  p { max-width:680px; margin:0 0 16px; }
+  ul { max-width:680px; padding-left:20px; }
+  code { font-family:"DM Mono",monospace; color:var(--teal); font-size:.9em; }
+  .formula { margin:22px 0; padding:16px 18px; border-left:4px solid var(--teal); background:rgba(23,102,95,.08); font:500 .9rem/1.6 "DM Mono",monospace; overflow:auto; }
+  footer { margin-top:70px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:.75rem; }
+  @media (max-width:600px) { body { padding:20px 18px 50px; } header { align-items:flex-start; } main { padding-top:48px; } section { margin-top:45px; } }
+</style>
+</head>
+<body>
+<header><div class="brand">CubaRate</div><a class="back" href="index.html">Volver al dashboard</a></header>
+<main>
+  <div class="eyebrow">DOCUMENTACIÓN</div>
+  <h1>Método</h1>
+  <section>
+    <h2>Cómo se obtienen las predicciones</h2>
+
+    <h3>Objetivo</h3>
+    <p>Este proyecto pronostica la tasa de cambio informal del dólar estadounidense
+    frente al peso cubano. Es un mercado no regulado cuyo precio se forma en plataformas
+    como eltoque.com. El objetivo es publicar un pronóstico a siete días, actualizado a
+    diario, con una estimación de la incertidumbre.</p>
+
+    <h3>Datos</h3>
+    <p>La fuente primaria es la API pública de cubanomic, que agrega las cotizaciones
+    que publica eltoque.com. Para cada día se toma la mediana de todas las cotizaciones
+    observadas. Se usa la mediana en lugar de la media porque resiste mejor los valores
+    extremos: si un vendedor publica un precio muy alto, la media sube, pero la mediana
+    casi no cambia. La serie se reconstruye en frecuencia diaria y los días sin datos se
+    rellenan con el último valor conocido.</p>
+    <p>La API consolida y publica el dato diario con uno o dos días de atraso, así que la
+    fecha de cobertura que aparece en la cabecera puede ser anterior a hoy. El modelo
+    trabaja siempre con el último dato consolidado disponible.</p>
+
+    <h3>Modelado</h3>
+    <p>El motor es AutoGluon TimeSeries, una biblioteca que entrena varios modelos de
+    series temporales a la vez y combina los mejores en un ensemble. Entre los modelos
+    que prueba están el suavizado exponencial, la descomposición de Theta, métodos
+    tabulares sobre valores rezagados y predictores estacionales sencillos. El
+    entrenamiento corre en CPU. El objetivo es la mediana diaria y el horizonte de
+    predicción es de siete días.</p>
+
+    <h3>Validación</h3>
+    <p>Para medir el rendimiento sin inflar los resultados, los últimos 30 días de la
+    serie se apartan del entrenamiento y se reservan como conjunto de prueba. Sobre ese
+    conjunto, AutoGluon calcula el MASE, que compara el error del modelo con el error de
+    un predictor que repite el valor de hace una semana. Un MASE de 1.0 significa que el
+    modelo empata con ese predictor; por debajo de 1.0, el modelo aporta valor. El
+    cálculo se hace sobre los últimos siete días del conjunto de prueba, que es el
+    horizonte que se publica. El modelo también usa backtesting interno durante el
+    entrenamiento para elegir los componentes del ensemble.</p>
+
+    <h3>Predicción e incertidumbre</h3>
+    <p>Cada día el modelo produce una distribución de valores posibles para cada uno de
+    los siete días siguientes, en lugar de un único número. De esa distribución se
+    publica la media como pronóstico central y los percentiles 10 y 90 como banda de
+    incertidumbre. El modelo estima que el valor real caerá dentro de esa banda con un
+    80% de probabilidad. Una banda ancha indica más incertidumbre; una banda estrecha,
+    más confianza. El pronóstico central es el punto medio de una distribución, no una
+    promesa.</p>
+
+    <h3>Cadencia de actualización</h3>
+    <p>El pronóstico se regenera a diario alrededor de las 08:00 hora de Cuba, con el
+    dato más reciente disponible. Cada domingo el modelo se reentrena con toda la serie
+    acumulada, para que incorpore el régimen de precios de la última semana. Cada tres o
+    seis meses, o cuando el sistema detecta una degradación sostenida, se repite la
+    exploración completa de modelos en busca de una configuración mejor. Esa
+    re-exploración es manual y no corre en el ciclo automático.</p>
+
+    <h3>Limitaciones conocidas</h3>
+    <p>La serie disponible cubre alrededor de dos años y el mercado informal está sujeto
+    a choques que ningún modelo estadístico puede anticipar, como cambios de política
+    monetaria, variaciones en la disponibilidad de divisas o eventos macroeconómicos. El
+    modelo estima el patrón reciente de la serie, no predice esos eventos. Nada de lo que
+    aparece aquí constituye consejo financiero.</p>
+  </section>
+</main>
+<footer>Proyecto académico y experimental. Datos: eltoque.com vía API de cubanomic.</footer>
+</body>
+</html>
