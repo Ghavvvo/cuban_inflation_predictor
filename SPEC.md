@@ -200,7 +200,7 @@ si no, JSON nbformat 4 estándar. Celdas en este orden exacto:
      "freq": "D",
      "hyperparameters": {<modelos del ensemble ganador + hiperparámetros>},
      "ensemble_weights": {<modelo: peso>},
-     "leaderboard": [{"model": "...", "score_test": ...}],
+    "leaderboard": [{"model": "...", "score_val": ..., "score_test": ...}],
      "baselines": {"naive": {"MAE": ...}, "moving_avg_7": {"MAE": ...}},
      "test_days": 30
    }
@@ -243,8 +243,8 @@ python -m src.retrain [--reexplore]
 - Default: lee `models/recipe.json` → `TimeSeriesPredictor` con mismos
   `hyperparameters` congelados → `fit()` sobre serie completa actualizada →
   sobrescribe `models/predictor/` → actualiza `frozen_at` NO (añade
-  `last_retrain` en recipe.json) → evalúa últimos 30 días, append métricas a
-  `history.jsonl` tipo `"retrain"`.
+  `last_retrain` en recipe.json) → conserva `best_model`, recalcula los
+  baselines actuales y guarda un evento en `history.jsonl` tipo `"retrain"`.
 - `--reexplore`: imprime mensaje "Re-exploración manual: usar notebook celda 12"
   y sale. (La re-exploración real vive en el notebook, D3.)
 
@@ -256,7 +256,8 @@ python -m src.monitor
 
 - Lee `output/history.jsonl`, compara predicciones pasadas vs valores reales
   ya observados → calcula MAE rolling 7d y 30d.
-- Degradación = MAE_7d > 1.5 × MAE_30d_baseline (baseline del recipe.json).
+- Degradación = MAE_7d > 1.5 × `baselines.naive.MAE` (baseline actual del
+  recipe.json).
 - Exit 0 sano; exit 2 degradado (mensaje stderr). CI mensual lo usa para alerta.
 - Print tabla resumen stdout (últimas 10 predicciones vs real).
 
@@ -276,7 +277,14 @@ python -m src.monitor
   "forecast": [
     {"date": "YYYY-MM-DD", "mean": 321.0, "p10": 315.0, "p90": 327.0}
   ],
-  "model": {"recipe_frozen_at": "<ISO8601>", "eval_metric": "MASE", "test_mase": 0.83},
+  "model": {
+    "recipe_frozen_at": "<ISO8601>",
+    "best_model": "<modelo congelado>",
+    "last_retrain": "<ISO8601>",
+    "data_last_date": "YYYY-MM-DD",
+    "eval_metric": "MASE",
+    "score_val": 0.83
+  },
   "disclaimer": "No es consejo financiero. Modelo experimental."
 }
 ```

@@ -28,13 +28,13 @@ python -c "from autogluon.timeseries import TimeSeriesPredictor; print('ok')"
 | `python -m src.data_loader` | Carga datos + asserts (sanity) |
 | `notebooks/autogluon_explore.ipynb` | Exploración completa: EDA → baselines → fit() único → congelar receta → predicción |
 | `python -m src.predict` | Predice 7 días con la receta congelada → `output/predictions.json` + `output/history.jsonl` |
-| `python -m src.retrain` | Reentrena la receta (semanal, sin re-explorar) |
+| `python -m src.retrain` | Reentrena el modelo congelado con toda la serie y actualiza baselines (semanal) |
 | `python -m src.retrain --reexplore` | Avisa que la re-exploración es manual (notebook celda final) |
 | `python -m src.monitor` | Actualiza reales, calcula MAE, detecta degradación (exit 2) |
 
 ### Re-exploración manual
 
-Cada 3-6 meses o si `src.monitor` detecta degradación (MAE_7d > 1.5× baseline):
+Cada 3-6 meses o si `src.monitor` detecta degradación (MAE_7d > 1.5× baseline naive):
 ejecutar la **celda final** del notebook (re-exploración completa, `time_limit`
 mayor). Nunca automática en CI.
 
@@ -49,7 +49,7 @@ mayor). Nunca automática en CI.
 ## Frontend
 
 Sitio estático en `frontend/index.html` (GitHub Pages). Consume
-`../output/predictions.json` y `../output/history.jsonl`. Publicar Pages desde
+`../output/predictions.json`, `../output/history.jsonl` y `../output/metrics.json`. Publicar Pages desde
 la raíz del repo (Settings → Pages → Deploy from a branch → root `/`).
 
 ## Estructura

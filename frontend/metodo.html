@@ -59,20 +59,22 @@
     <h3>Modelado</h3>
     <p>El motor es AutoGluon TimeSeries, una biblioteca que entrena varios modelos de
     series temporales a la vez y combina los mejores en un ensemble. Entre los modelos
-    que prueba están el suavizado exponencial, la descomposición de Theta, métodos
-    tabulares sobre valores rezagados y predictores estacionales sencillos. El
+    que prueba están ETS, Theta, RecursiveTabular, DirectTabular y SeasonalNaive. El
     entrenamiento corre en CPU. El objetivo es la mediana diaria y el horizonte de
     predicción es de siete días.</p>
 
     <h3>Validación</h3>
-    <p>Para medir el rendimiento sin inflar los resultados, los últimos 30 días de la
-    serie se apartan del entrenamiento y se reservan como conjunto de prueba. Sobre ese
-    conjunto, AutoGluon calcula el MASE, que compara el error del modelo con el error de
-    un predictor que repite el valor de hace una semana. Un MASE de 1.0 significa que el
-    modelo empata con ese predictor; por debajo de 1.0, el modelo aporta valor. El
-    cálculo se hace sobre los últimos siete días del conjunto de prueba, que es el
-    horizonte que se publica. El modelo también usa backtesting interno durante el
-    entrenamiento para elegir los componentes del ensemble.</p>
+    <p>Durante la exploración manual, los últimos 30 días de la serie se apartan del
+    entrenamiento y se reservan como conjunto de prueba. Sobre ese conjunto, AutoGluon
+    calcula el MASE, que compara el error del modelo con el error de un predictor que
+    repite el valor de hace una semana. Un MASE de 1.0 significa que el modelo empata
+    con ese predictor; por debajo de 1.0, el modelo aporta valor. El cálculo se hace
+    sobre los últimos siete días del conjunto de prueba, que es el horizonte que se
+    publica. El modelo también usa backtesting interno durante el entrenamiento para
+    elegir los componentes del ensemble.</p>
+    <p>En la operación semanal, el predictor congelado se reentrena con toda la serie
+    disponible. El monitor evalúa después las predicciones publicadas cuando ya existe
+    un dato real.</p>
 
     <h3>Predicción e incertidumbre</h3>
     <p>Cada día el modelo produce una distribución de valores posibles para cada uno de
