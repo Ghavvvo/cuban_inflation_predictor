@@ -9,7 +9,6 @@ from autogluon.timeseries import TimeSeriesDataFrame, TimeSeriesPredictor
 
 from src.data_loader import load_series
 
-PREDICTION_LENGTH = 7
 PREDICTOR_PATH = "models/predictor"
 RECIPE_PATH = "models/recipe.json"
 OUTPUT_PATH = "output/predictions.json"
@@ -51,12 +50,14 @@ def upsert_predictions(path: Path, forecast: list[dict], generated_at: str) -> l
 
 
 def main(out: str = OUTPUT_PATH) -> int:
+    recipe = json.load(open(RECIPE_PATH))
     df_long = load_series(refresh=True)
     tsdf = TimeSeriesDataFrame.from_data_frame(
         df_long, id_column="item_id", timestamp_column="timestamp"
     )
     predictor = TimeSeriesPredictor.load(PREDICTOR_PATH)
-    forecast = predictor.predict(tsdf)
+    best_model = recipe["best_model"]
+    forecast = predictor.predict(tsdf, model=best_model)
     f = forecast.loc["USD"]
 
     last_ts = tsdf.index.get_level_values("timestamp").max()
@@ -67,17 +68,16 @@ def main(out: str = OUTPUT_PATH) -> int:
     for fecha, valor in tsdf.loc["USD"]["target"].tail(30).items():
         history_series.append({"date": str(fecha.date()), "value": float(valor)})
 
-    recipe = json.load(open(RECIPE_PATH))
-    test_mase = None
-    lb = recipe.get("leaderboard") or []
-    if lb:
-        raw = lb[0].get("score_test")
-        test_mase = abs(raw) if raw is not None else None
+    score_val = None
+    for row in recipe.get("leaderboard", []):
+        if row.get("model") == best_model:
+            score_val = row.get("score_val")
+            break
 
     pred = {
         "generated_at": pd.Timestamp.utcnow().isoformat(),
         "item_id": "USD",
-        "horizon_days": PREDICTION_LENGTH,
+        "horizon_days": recipe["prediction_length"],
         "last_observed": {"date": str(last_ts.date()), "value": last_val},
         "history_series": history_series,
         "forecast": [
@@ -91,8 +91,11 @@ def main(out: str = OUTPUT_PATH) -> int:
         ],
         "model": {
             "recipe_frozen_at": recipe.get("frozen_at"),
+            "best_model": best_model,
+            "last_retrain": recipe.get("last_retrain"),
+            "data_last_date": recipe.get("data_last_date"),
             "eval_metric": recipe.get("eval_metric"),
-            "test_mase": test_mase,
+            "score_val": abs(score_val) if score_val is not None else None,
         },
         "disclaimer": "No es consejo financiero. Modelo experimental.",
     }

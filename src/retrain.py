@@ -25,13 +25,15 @@ def log_error(source: str, msg: str) -> None:
         }) + "\n")
 
 
-def calculate_baselines(train: TimeSeriesDataFrame,
-                        test: TimeSeriesDataFrame,
-                        prediction_length: int) -> dict:
-    train_values = train.loc["USD"]["target"]
-    test_values = test.loc["USD"]["target"].tail(prediction_length)
-    naive_prediction = train_values.iloc[-1]
-    moving_avg_prediction = train_values.rolling(7).mean().iloc[-1]
+def calculate_baselines(tsdf: TimeSeriesDataFrame,
+                        prediction_length: int,
+                        window_days: int = 30) -> dict:
+    values = tsdf.loc["USD"]["target"]
+    evaluation_values = values.tail(window_days)
+    baseline_values = evaluation_values.iloc[:-prediction_length]
+    test_values = evaluation_values.iloc[-prediction_length:]
+    naive_prediction = baseline_values.iloc[-1]
+    moving_avg_prediction = baseline_values.tail(7).mean()
 
     return {
         "naive": {
@@ -70,24 +72,31 @@ def main(reexplore: bool = False) -> int:
         verbosity=1,
     )
 
-    train = tsdf.slice_by_timestep(None, -recipe["test_days"])
-    test = tsdf.slice_by_timestep(-recipe["test_days"], None)
-    lb = predictor.leaderboard(test)
-    best = lb["model"].iloc[0]
+    best_model = recipe["best_model"]
+    leaderboard = predictor.leaderboard()
+    leaderboard_rows = leaderboard.reset_index().to_dict(orient="records")
+    for row in leaderboard_rows:
+        score_val = row.get("score_val")
+        if score_val is not None:
+            row["score_val"] = abs(score_val)
+        score_test = row.get("score_test")
+        if score_test is not None:
+            row["score_test"] = abs(score_test)
+
+    frozen_score_val = None
+    for row in leaderboard_rows:
+        if row.get("model") == best_model:
+            frozen_score_val = row.get("score_val")
+            break
 
     recipe["last_retrain"] = pd.Timestamp.utcnow().isoformat()
-    recipe["best_model"] = best
     recipe["data_last_date"] = str(
         tsdf.index.get_level_values("timestamp").max().date()
     )
     recipe["baselines"] = calculate_baselines(
-        train, test, recipe["prediction_length"]
+        tsdf, recipe["prediction_length"]
     )
-    leaderboard = lb.reset_index().to_dict(orient="records")
-    for row in leaderboard:
-        raw = row.get("score_test")
-        row["score_test"] = abs(raw) if raw is not None else None
-    recipe["leaderboard"] = leaderboard
+    recipe["leaderboard"] = leaderboard_rows
     with open(RECIPE_PATH, "w") as f:
         json.dump(recipe, f, indent=2, default=str)
 
@@ -96,11 +105,11 @@ def main(reexplore: bool = False) -> int:
         fh.write(json.dumps({
             "type": "retrain",
             "at": recipe["last_retrain"],
-            "best_model": best,
-            "score_test": recipe["leaderboard"][0]["score_test"],
+            "best_model": best_model,
+            "score_val": frozen_score_val,
         }) + "\n")
 
-    print("retrain OK. best_model:", best)
+    print("retrain OK. best_model:", best_model)
     return 0
 
 

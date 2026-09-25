@@ -30,6 +30,16 @@ def write_metrics(mae7: float | None, mae30: float | None,
         }, fh, indent=2)
 
 
+def print_recent_predictions(done: pd.DataFrame) -> None:
+    recent = done.tail(10)
+    print("últimas predicciones auditadas:")
+    for _, row in recent.iterrows():
+        print(
+            f"  {row['date']}: predicho={row['predicted']:.2f} "
+            f"real={row['actual']:.2f} error={row['err']:.2f}"
+        )
+
+
 def main() -> int:
     history = Path(HISTORY_PATH)
     if not history.exists():
@@ -68,14 +78,10 @@ def main() -> int:
     mae30 = float(done["err"].tail(30).mean())
     print(f"predicciones con real: {len(done)} | MAE_7d={mae7:.2f} "
           f"| MAE_30d={mae30:.2f}")
+    print_recent_predictions(done)
 
     recipe = json.load(open(RECIPE_PATH))
-    baseline_mae = None
-    for k in ("naive", "moving_avg_7"):
-        v = recipe.get("baselines", {}).get(k, {}).get("MAE")
-        if v is not None:
-            baseline_mae = v
-            break
+    baseline_mae = recipe.get("baselines", {}).get("naive", {}).get("MAE")
     if baseline_mae is not None and mae7 > 1.5 * baseline_mae:
         write_metrics(mae7, mae30, baseline_mae, True)
         print("DEGRADACIÓN: MAE_7d > 1.5× baseline. Re-explorar (notebook celda final).",
