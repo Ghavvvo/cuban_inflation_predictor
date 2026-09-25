@@ -4,6 +4,7 @@ Exit 0 = sano. Exit 2 = degradado (MAE_7d > 1.5× baseline naive/moving_avg).
 """
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -12,17 +13,34 @@ from src.data_loader import load_series
 
 HISTORY_PATH = "output/history.jsonl"
 RECIPE_PATH = "models/recipe.json"
+METRICS_PATH = "output/metrics.json"
+
+
+def write_metrics(mae7: float | None, mae30: float | None,
+                  baseline_mae: float | None,
+                  degraded: bool) -> None:
+    Path(METRICS_PATH).parent.mkdir(parents=True, exist_ok=True)
+    with open(METRICS_PATH, "w") as fh:
+        json.dump({
+            "mae_7d": mae7,
+            "mae_30d": mae30,
+            "baseline_mae": baseline_mae,
+            "degraded": degraded,
+            "computed_at": datetime.now(timezone.utc).isoformat(),
+        }, fh, indent=2)
 
 
 def main() -> int:
     history = Path(HISTORY_PATH)
     if not history.exists():
+        write_metrics(None, None, None, False)
         print("sin historial aún")
         return 0
 
     events = [json.loads(l) for l in history.read_text().splitlines() if l.strip()]
     preds = [e for e in events if e.get("type") == "prediction"]
     if not preds:
+        write_metrics(None, None, None, False)
         print("sin predicciones en historial")
         return 0
 
@@ -42,6 +60,7 @@ def main() -> int:
 
     done = pd.DataFrame([e for e in preds if e.get("actual") is not None])
     if done.empty:
+        write_metrics(None, None, None, False)
         print("aún sin predicciones con dato real")
         return 0
     done["err"] = (done["actual"] - done["predicted"]).abs()
@@ -57,10 +76,12 @@ def main() -> int:
         if v is not None:
             baseline_mae = v
             break
-    if baseline_mae and mae7 > 1.5 * baseline_mae:
+    if baseline_mae is not None and mae7 > 1.5 * baseline_mae:
+        write_metrics(mae7, mae30, baseline_mae, True)
         print("DEGRADACIÓN: MAE_7d > 1.5× baseline. Re-explorar (notebook celda final).",
               file=sys.stderr)
         return 2
+    write_metrics(mae7, mae30, baseline_mae, False)
     return 0
 
 

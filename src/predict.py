@@ -71,7 +71,8 @@ def main(out: str = OUTPUT_PATH) -> int:
     test_mase = None
     lb = recipe.get("leaderboard") or []
     if lb:
-        test_mase = lb[0].get("score_test")
+        raw = lb[0].get("score_test")
+        test_mase = abs(raw) if raw is not None else None
 
     pred = {
         "generated_at": pd.Timestamp.utcnow().isoformat(),

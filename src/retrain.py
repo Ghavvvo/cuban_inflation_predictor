@@ -25,6 +25,24 @@ def log_error(source: str, msg: str) -> None:
         }) + "\n")
 
 
+def calculate_baselines(train: TimeSeriesDataFrame,
+                        test: TimeSeriesDataFrame,
+                        prediction_length: int) -> dict:
+    train_values = train.loc["USD"]["target"]
+    test_values = test.loc["USD"]["target"].tail(prediction_length)
+    naive_prediction = train_values.iloc[-1]
+    moving_avg_prediction = train_values.rolling(7).mean().iloc[-1]
+
+    return {
+        "naive": {
+            "MAE": float((test_values - naive_prediction).abs().mean()),
+        },
+        "moving_avg_7": {
+            "MAE": float((test_values - moving_avg_prediction).abs().mean()),
+        },
+    }
+
+
 def main(reexplore: bool = False) -> int:
     if reexplore:
         # D3: re-exploración es MANUAL, vive en el notebook (celda final).
@@ -52,7 +70,8 @@ def main(reexplore: bool = False) -> int:
         verbosity=1,
     )
 
-    test = tsdf.slice_by_timestep(None, -recipe["test_days"])
+    train = tsdf.slice_by_timestep(None, -recipe["test_days"])
+    test = tsdf.slice_by_timestep(-recipe["test_days"], None)
     lb = predictor.leaderboard(test)
     best = lb["model"].iloc[0]
 
@@ -61,7 +80,14 @@ def main(reexplore: bool = False) -> int:
     recipe["data_last_date"] = str(
         tsdf.index.get_level_values("timestamp").max().date()
     )
-    recipe["leaderboard"] = lb.reset_index().to_dict(orient="records")
+    recipe["baselines"] = calculate_baselines(
+        train, test, recipe["prediction_length"]
+    )
+    leaderboard = lb.reset_index().to_dict(orient="records")
+    for row in leaderboard:
+        raw = row.get("score_test")
+        row["score_test"] = abs(raw) if raw is not None else None
+    recipe["leaderboard"] = leaderboard
     with open(RECIPE_PATH, "w") as f:
         json.dump(recipe, f, indent=2, default=str)
 
@@ -71,7 +97,7 @@ def main(reexplore: bool = False) -> int:
             "type": "retrain",
             "at": recipe["last_retrain"],
             "best_model": best,
-            "score_test": float(lb["score_test"].iloc[0]),
+            "score_test": recipe["leaderboard"][0]["score_test"],
         }) + "\n")
 
     print("retrain OK. best_model:", best)
