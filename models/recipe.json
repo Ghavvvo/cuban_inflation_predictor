@@ -8,14 +8,14 @@
   "excluded_model_types": [
     "Chronos"
   ],
-  "best_model": "Theta",
+  "best_model": "WeightedEnsemble",
   "ensemble_weights": {},
   "leaderboard": [
     {
       "index": 0,
       "model": "Theta",
-      "score_test": -0.08870053806778297,
-      "score_val": -1.2855354083262498,
+      "score_test": 0.08870053806778297,
+      "score_val": 1.2855354083262498,
       "pred_time_test": 0.025875568389892578,
       "pred_time_val": 0.6224451065063477,
       "fit_time_marginal": 0.011239290237426758,
@@ -24,8 +24,8 @@
     {
       "index": 1,
       "model": "WeightedEnsemble",
-      "score_test": -0.09521945586985787,
-      "score_val": -0.7313213250394915,
+      "score_test": 0.09521945586985787,
+      "score_val": 0.7313213250394915,
       "pred_time_test": 0.05203366279602051,
       "pred_time_val": 0.04641805767479923,
       "fit_time_marginal": 0.25122302700000887,
@@ -34,8 +34,8 @@
     {
       "index": 2,
       "model": "RecursiveTabular",
-      "score_test": -0.09521945586985787,
-      "score_val": -0.7313213250394915,
+      "score_test": 0.09521945586985787,
+      "score_val": 0.7313213250394915,
       "pred_time_test": 0.051439762115478516,
       "pred_time_val": 0.04600334167480469,
       "fit_time_marginal": 0.5479354858398438,
@@ -44,8 +44,8 @@
     {
       "index": 3,
       "model": "ETS",
-      "score_test": -0.37028045892084976,
-      "score_val": -0.9578803415430189,
+      "score_test": 0.37028045892084976,
+      "score_val": 0.9578803415430189,
       "pred_time_test": 0.23778462409973145,
       "pred_time_val": 2.0680885314941406,
       "fit_time_marginal": 0.010214090347290039,
@@ -54,8 +54,8 @@
     {
       "index": 4,
       "model": "Chronos2",
-      "score_test": -0.6932002999688274,
-      "score_val": -1.7495068084732404,
+      "score_test": 0.6932002999688274,
+      "score_val": 1.7495068084732404,
       "pred_time_test": 0.614722728729248,
       "pred_time_val": 0.2548494338989258,
       "fit_time_marginal": 5.6525750160217285,
@@ -64,8 +64,8 @@
     {
       "index": 5,
       "model": "SeasonalNaive",
-      "score_test": -0.7786016949152544,
-      "score_val": -1.603934841364533,
+      "score_test": 0.7786016949152544,
+      "score_val": 1.603934841364533,
       "pred_time_test": 0.015335559844970703,
       "pred_time_val": 1.5543508529663086,
       "fit_time_marginal": 0.010577201843261719,
@@ -74,8 +74,8 @@
     {
       "index": 6,
       "model": "Toto2",
-      "score_test": -0.8608529042389435,
-      "score_val": -1.0092545638704071,
+      "score_test": 0.8608529042389435,
+      "score_val": 1.0092545638704071,
       "pred_time_test": 0.25641417503356934,
       "pred_time_val": 0.02530694007873535,
       "fit_time_marginal": 1.1887860298156738,
@@ -84,8 +84,8 @@
     {
       "index": 7,
       "model": "DirectTabular",
-      "score_test": -2.163761440643483,
-      "score_val": -4.387569351417356,
+      "score_test": 2.163761440643483,
+      "score_val": 4.387569351417356,
       "pred_time_test": 0.0551457405090332,
       "pred_time_val": 0.051695823669433594,
       "fit_time_marginal": 0.4363696575164795,
