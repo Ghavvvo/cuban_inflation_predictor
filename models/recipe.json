@@ -13,97 +13,77 @@
   "leaderboard": [
     {
       "index": 0,
-      "model": "Theta",
-      "score_test": 0.08870053806778297,
-      "score_val": 1.2855354083262498,
-      "pred_time_test": 0.025875568389892578,
-      "pred_time_val": 0.6224451065063477,
-      "fit_time_marginal": 0.011239290237426758,
-      "fit_order": 5
-    },
-    {
-      "index": 1,
       "model": "WeightedEnsemble",
-      "score_test": 0.09521945586985787,
-      "score_val": 0.7313213250394915,
-      "pred_time_test": 0.05203366279602051,
-      "pred_time_val": 0.04641805767479923,
-      "fit_time_marginal": 0.25122302700000887,
+      "score_val": 0.47587653815854963,
+      "pred_time_val": 0.04563845061733218,
+      "fit_time_marginal": 0.2569465409999907,
       "fit_order": 8
     },
     {
-      "index": 2,
+      "index": 1,
       "model": "RecursiveTabular",
-      "score_test": 0.09521945586985787,
-      "score_val": 0.7313213250394915,
-      "pred_time_test": 0.051439762115478516,
-      "pred_time_val": 0.04600334167480469,
-      "fit_time_marginal": 0.5479354858398438,
+      "score_val": 0.47587653815854963,
+      "pred_time_val": 0.04523777961730957,
+      "fit_time_marginal": 0.472062349319458,
       "fit_order": 2
+    },
+    {
+      "index": 2,
+      "model": "Toto2",
+      "score_val": 0.726992662289453,
+      "pred_time_val": 0.023291349411010742,
+      "fit_time_marginal": 0.9733822345733643,
+      "fit_order": 7
     },
     {
       "index": 3,
       "model": "ETS",
-      "score_test": 0.37028045892084976,
-      "score_val": 0.9578803415430189,
-      "pred_time_test": 0.23778462409973145,
-      "pred_time_val": 2.0680885314941406,
-      "fit_time_marginal": 0.010214090347290039,
+      "score_val": 1.3925074368404537,
+      "pred_time_val": 2.106914520263672,
+      "fit_time_marginal": 0.010720968246459961,
       "fit_order": 4
     },
     {
       "index": 4,
       "model": "Chronos2",
-      "score_test": 0.6932002999688274,
-      "score_val": 1.7495068084732404,
-      "pred_time_test": 0.614722728729248,
-      "pred_time_val": 0.2548494338989258,
-      "fit_time_marginal": 5.6525750160217285,
+      "score_val": 1.4092443474055274,
+      "pred_time_val": 0.24690580368041992,
+      "fit_time_marginal": 6.519701719284058,
       "fit_order": 6
     },
     {
       "index": 5,
-      "model": "SeasonalNaive",
-      "score_test": 0.7786016949152544,
-      "score_val": 1.603934841364533,
-      "pred_time_test": 0.015335559844970703,
-      "pred_time_val": 1.5543508529663086,
-      "fit_time_marginal": 0.010577201843261719,
-      "fit_order": 1
+      "model": "Theta",
+      "score_val": 1.5728272177960032,
+      "pred_time_val": 0.6016654968261719,
+      "fit_time_marginal": 0.009335994720458984,
+      "fit_order": 5
     },
     {
       "index": 6,
-      "model": "Toto2",
-      "score_test": 0.8608529042389435,
-      "score_val": 1.0092545638704071,
-      "pred_time_test": 0.25641417503356934,
-      "pred_time_val": 0.02530694007873535,
-      "fit_time_marginal": 1.1887860298156738,
-      "fit_order": 7
+      "model": "SeasonalNaive",
+      "score_val": 2.7134222392785188,
+      "pred_time_val": 1.5127143859863281,
+      "fit_time_marginal": 0.010420799255371094,
+      "fit_order": 1
     },
     {
       "index": 7,
       "model": "DirectTabular",
-      "score_test": 2.163761440643483,
-      "score_val": 4.387569351417356,
-      "pred_time_test": 0.0551457405090332,
-      "pred_time_val": 0.051695823669433594,
-      "fit_time_marginal": 0.4363696575164795,
+      "score_val": 6.355779488805182,
+      "pred_time_val": 0.05218243598937988,
+      "fit_time_marginal": 5.375385046005249,
       "fit_order": 3
     }
   ],
   "baselines": {
     "naive": {
-      "MAE": 7.233333333333333,
-      "RMSE": 8.957306142659931,
-      "MASE": 1.0689655172413792
+      "MAE": 13.285714285714286
     },
     "moving_avg_7": {
-      "MAE": 7.471428571428571,
-      "RMSE": 8.331686912187775,
-      "MASE": 1.104152005629838
+      "MAE": 22.57142857142862
     }
   },
-  "data_last_date": "2026-09-20",
-  "last_retrain": "2026-09-20T16:40:39.018942+00:00"
+  "data_last_date": "2026-09-27",
+  "last_retrain": "2026-09-27T17:24:21.830468+00:00"
 }
