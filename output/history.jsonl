@@ -36,3 +36,4 @@
 {"type": "prediction", "generated_at": "2026-10-11T16:59:29.686358+00:00", "date": "2026-10-16", "predicted": 790.32, "actual": null}
 {"type": "prediction", "generated_at": "2026-10-11T16:59:29.686358+00:00", "date": "2026-10-17", "predicted": 791.52, "actual": null}
 {"type": "prediction", "generated_at": "2026-10-11T16:59:29.686358+00:00", "date": "2026-10-18", "predicted": 790.52, "actual": null}
+{"type": "retrain", "at": "2026-10-11T17:53:11.064601+00:00", "best_model": "WeightedEnsemble", "score_val": 0.4339071131969146}
