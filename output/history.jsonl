@@ -36,11 +36,13 @@
 {"type": "prediction", "generated_at": "2026-10-14T16:10:14.918346+00:00", "date": "2026-10-15", "predicted": 776.02, "actual": 795.0}
 {"type": "prediction", "generated_at": "2026-10-15T15:57:06.013337+00:00", "date": "2026-10-16", "predicted": 780.38, "actual": 800.0}
 {"type": "prediction", "generated_at": "2026-10-16T15:45:31.385543+00:00", "date": "2026-10-17", "predicted": 785.23, "actual": 800.0}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-18", "predicted": 785.17, "actual": null}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-19", "predicted": 785.23, "actual": null}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-20", "predicted": 784.74, "actual": null}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-21", "predicted": 784.66, "actual": null}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-22", "predicted": 784.49, "actual": null}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-23", "predicted": 785.14, "actual": null}
-{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-24", "predicted": 784.49, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-18", "predicted": 785.17, "actual": 810.0}
+{"type": "prediction", "generated_at": "2026-10-17T14:38:03.834819+00:00", "date": "2026-10-19", "predicted": 785.23, "actual": 810.0}
 {"type": "retrain", "at": "2026-10-18T16:15:58.334972+00:00", "best_model": "WeightedEnsemble", "score_val": 0.7492035734864039}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-20", "predicted": 812.63, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-21", "predicted": 811.95, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-22", "predicted": 811.62, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-23", "predicted": 813.16, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-24", "predicted": 812.91, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-25", "predicted": 813.34, "actual": null}
+{"type": "prediction", "generated_at": "2026-10-19T17:56:38.578688+00:00", "date": "2026-10-26", "predicted": 811.82, "actual": null}
