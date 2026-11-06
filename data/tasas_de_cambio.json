@@ -1,25 +1,6 @@
 [
   [
     {
-      "_id": "2024-11-06",
-      "avg": 327.08,
-      "count_values": 397,
-      "cur": "USD",
-      "first": {
-        "date": "2024-11-05 07:03:33",
-        "value": 330.0
-      },
-      "last": {
-        "date": "2024-11-06 06:58:19",
-        "value": 328.0
-      },
-      "max": 360.0,
-      "median": 327.0,
-      "min": 265.0,
-      "offer": "General",
-      "trmi": "true"
-    },
-    {
       "_id": "2024-11-07",
       "avg": 326.99,
       "count_values": 184,
@@ -13658,6 +13639,25 @@
       "max": 1030.0,
       "median": 920.0,
       "min": 820.0,
+      "offer": "General",
+      "trmi": "true"
+    },
+    {
+      "_id": "2026-11-06",
+      "avg": 917.79,
+      "count_values": 344,
+      "cur": "USD",
+      "first": {
+        "date": "2026-11-05 07:03:58",
+        "value": 915.0
+      },
+      "last": {
+        "date": "2026-11-06 06:58:39",
+        "value": 925.0
+      },
+      "max": 1030.0,
+      "median": 925.0,
+      "min": 190.1,
       "offer": "General",
       "trmi": "true"
     }
