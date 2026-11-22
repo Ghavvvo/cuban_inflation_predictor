@@ -14,76 +14,76 @@
     {
       "index": 0,
       "model": "WeightedEnsemble",
-      "score_val": 0.5100156960754384,
-      "pred_time_val": 1.3554587078074292,
-      "fit_time_marginal": 0.12361545099997784,
+      "score_val": 1.1681131421354785,
+      "pred_time_val": 1.6175283380251528,
+      "fit_time_marginal": 0.14569052199999533,
       "fit_order": 8
     },
     {
       "index": 1,
-      "model": "SeasonalNaive",
-      "score_val": 1.5825181142011497,
-      "pred_time_val": 0.9573507308959961,
-      "fit_time_marginal": 0.006824016571044922,
-      "fit_order": 1
-    },
-    {
-      "index": 2,
-      "model": "Theta",
-      "score_val": 1.8595292487821808,
-      "pred_time_val": 0.36696338653564453,
-      "fit_time_marginal": 0.00715327262878418,
-      "fit_order": 5
-    },
-    {
-      "index": 3,
-      "model": "Toto2",
-      "score_val": 3.168106926339586,
-      "pred_time_val": 0.012883186340332031,
-      "fit_time_marginal": 0.2835564613342285,
-      "fit_order": 7
-    },
-    {
-      "index": 4,
       "model": "ETS",
-      "score_val": 3.428680742113752,
-      "pred_time_val": 1.3153610229492188,
-      "fit_time_marginal": 0.00790548324584961,
+      "score_val": 1.1681131421354785,
+      "pred_time_val": 1.6171698570251465,
+      "fit_time_marginal": 0.007148027420043945,
       "fit_order": 4
     },
     {
-      "index": 5,
+      "index": 2,
+      "model": "Toto2",
+      "score_val": 1.3944822610737708,
+      "pred_time_val": 0.015449762344360352,
+      "fit_time_marginal": 0.6122028827667236,
+      "fit_order": 7
+    },
+    {
+      "index": 3,
+      "model": "Theta",
+      "score_val": 2.236795271499328,
+      "pred_time_val": 0.47773051261901855,
+      "fit_time_marginal": 0.006139516830444336,
+      "fit_order": 5
+    },
+    {
+      "index": 4,
       "model": "RecursiveTabular",
-      "score_val": 3.618795681525797,
-      "pred_time_val": 0.028057336807250977,
-      "fit_time_marginal": 0.3380441665649414,
+      "score_val": 2.358728486643813,
+      "pred_time_val": 0.029831886291503906,
+      "fit_time_marginal": 0.347379207611084,
       "fit_order": 2
+    },
+    {
+      "index": 5,
+      "model": "SeasonalNaive",
+      "score_val": 2.4392459686577332,
+      "pred_time_val": 1.1132869720458984,
+      "fit_time_marginal": 0.008085012435913086,
+      "fit_order": 1
     },
     {
       "index": 6,
       "model": "DirectTabular",
-      "score_val": 4.34269928173829,
-      "pred_time_val": 0.029696941375732422,
-      "fit_time_marginal": 2.715384006500244,
+      "score_val": 2.5249411578398253,
+      "pred_time_val": 0.03266024589538574,
+      "fit_time_marginal": 4.706688165664673,
       "fit_order": 3
     },
     {
       "index": 7,
       "model": "Chronos2",
-      "score_val": 5.36556337902074,
-      "pred_time_val": 0.19121694564819336,
-      "fit_time_marginal": 2.9631128311157227,
+      "score_val": 2.9383115979975183,
+      "pred_time_val": 0.17857623100280762,
+      "fit_time_marginal": 4.5749006271362305,
       "fit_order": 6
     }
   ],
   "baselines": {
     "naive": {
-      "MAE": 19.285714285714285
+      "MAE": 23.571428571428573
     },
     "moving_avg_7": {
-      "MAE": 6.224489795918381
+      "MAE": 22.857142857142907
     }
   },
-  "data_last_date": "2026-11-15",
-  "last_retrain": "2026-11-15T19:12:53.241283+00:00"
+  "data_last_date": "2026-11-22",
+  "last_retrain": "2026-11-22T20:05:22.514913+00:00"
 }
